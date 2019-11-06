@@ -170,10 +170,11 @@ public class AppFrame extends JFrame {
 					// initialize random
 					Random random = new Random();
 					// initialize random keycode
-					int keycode = generateRandomAlphanumericKeyCode();
+					int keycode = generateRandomKeyCode();
 					// if alphabet, chance based lower case or upper case
+					// if number, chance based number or symbol
 					boolean shift = false;
-					if (keycode >= 65 && keycode <= 90 && random.nextInt(2) == 0) {
+					if (random.nextInt(2) == 0) {
 						shift = true;
 					}
 					// press shift key if required
@@ -225,7 +226,7 @@ public class AppFrame extends JFrame {
 		});
 	}
 	
-	public static int generateRandomAlphanumericKeyCode() {
+	public static int generateRandomKeyCode() {
 		Random random = new Random();
 		if (random.nextInt(3) == 0) {
 			return random.nextInt((57 - 48) + 1) + 48;
