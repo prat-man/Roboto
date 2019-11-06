@@ -11,7 +11,7 @@
 	<name>Roboto</name>
 	<description>Random mouse movement and keyboard key press simulator</description>
 	<url>https://github.com/prat-man/Roboto</url>
-	
+
 	<developers>
 		<developer>
 			<name>Pratanu Mandal</name>
@@ -34,21 +34,49 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	
+
 	<build>
 		<plugins>
 			<plugin>
-			    <groupId>org.apache.maven.plugins</groupId>
-			    <artifactId>maven-jar-plugin</artifactId>
-			    <configuration>
-			        <archive>
-			            <manifest>
-			                <mainClass>
-			                    tk.pratanumandal.roboto.App
-			                </mainClass>
-			            </manifest>
-			        </archive>
-			    </configuration>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<mainClass>tk.pratanumandal.roboto.App</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>com.github.wvengen</groupId>
+				<artifactId>proguard-maven-plugin</artifactId>
+				<version>2.2.0</version>
+				<executions>
+					<execution>
+						<id>process-classes-with-proguard</id>
+						<phase>package</phase>
+						<goals>
+							<goal>proguard</goal>
+						</goals>
+						<configuration>
+							<obfuscate>true</obfuscate>
+							<injar>${project.build.finalName}.jar</injar>
+							<outjar>${project.build.finalName}-proguard.jar</outjar>
+							<includeDependency>true</includeDependency>
+							<silent>true</silent>
+							<options>
+								<option>-keep public class tk.pratanumandal.roboto.App { *; }</option>
+								<option>-optimizationpasses 5</option>
+								<option>-overloadaggressively</option>
+							</options>
+							<libs>
+								<lib>${java.home}</lib>
+							</libs>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
