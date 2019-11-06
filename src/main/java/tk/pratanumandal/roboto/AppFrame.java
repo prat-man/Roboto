@@ -13,8 +13,6 @@ import java.awt.SystemTray;
 import java.awt.Toolkit;
 import java.awt.TrayIcon;
 import java.awt.TrayIcon.MessageType;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -49,7 +47,7 @@ public class AppFrame extends JFrame {
 	
 	public AppFrame() {
 		// call super constructor and set frame title
-		super("Roboto");
+		super("Roboto 1.1");
 		
 		// set frame icon
 		try {
@@ -120,109 +118,97 @@ public class AppFrame extends JFrame {
 		
 		
 		// start action for mouse
-		mouseStartButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-					// initialize robot
-					Robot robot = new Robot();
-					
-					// initialize screen size
-					Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-					int MAX_X = (int) screenSize.getWidth();
-					int MAX_Y = (int) screenSize.getHeight();
-					
-					// start scheduler to move mouse every 5 seconds
-					ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
-					mouseFuture = exec.scheduleAtFixedRate(() -> {
-						// initialize random
-						Random random = new Random();
-						// move mouse
-						robot.mouseMove(random.nextInt(MAX_X), random.nextInt(MAX_Y));
-					}, 0, 5, TimeUnit.SECONDS);
-					
-					System.out.println("Mouse Scheduler Started");
-					displayTray("Roboto", "Mouse Scheduler Started");
-					
-					mouseStartButton.setEnabled(false);
-					mouseStopButton.setEnabled(true);
-				} catch (AWTException e1) {
-					e1.printStackTrace();
-				}
+		mouseStartButton.addActionListener((event) -> {
+			try {
+				// initialize robot
+				Robot robot = new Robot();
+				
+				// initialize screen size
+				Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+				int MAX_X = (int) screenSize.getWidth();
+				int MAX_Y = (int) screenSize.getHeight();
+				
+				// start scheduler to move mouse every 5 seconds
+				ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
+				mouseFuture = exec.scheduleAtFixedRate(() -> {
+					// initialize random
+					Random random = new Random();
+					// move mouse
+					robot.mouseMove(random.nextInt(MAX_X), random.nextInt(MAX_Y));
+				}, 0, 5, TimeUnit.SECONDS);
+				
+				System.out.println("Mouse Scheduler Started");
+				displayTray("Roboto", "Mouse Scheduler Started");
+				
+				mouseStartButton.setEnabled(false);
+				mouseStopButton.setEnabled(true);
+			} catch (AWTException e1) {
+				e1.printStackTrace();
 			}
 		});
 		
 		// stop action for mouse
-		mouseStopButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				mouseFuture.cancel(true);
-				
-				System.out.println("Mouse Scheduler Stopped");
-				displayTray("Roboto", "Mouse Scheduler Stopped");
-				
-				mouseStartButton.setEnabled(true);
-				mouseStopButton.setEnabled(false);
-			}
+		mouseStopButton.addActionListener((event) -> {
+			mouseFuture.cancel(true);
+			
+			System.out.println("Mouse Scheduler Stopped");
+			displayTray("Roboto", "Mouse Scheduler Stopped");
+			
+			mouseStartButton.setEnabled(true);
+			mouseStopButton.setEnabled(false);
 		});
 		
 		// start action for keyboard
-		keyboardStartButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-					// initialize robot
-					Robot robot = new Robot();
-					
-					// start scheduler to move keyboard every 5 seconds
-					ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
-					keyboardFuture = exec.scheduleAtFixedRate(() -> {
-						// initialize random
-						Random random = new Random();
-						// initialize random keycode
-						int keycode = generateRandomAlphanumericKeyCode();
-						// if alphabet, chance based lower case or upper case
-						boolean shift = false;
-						if (keycode >= 65 && keycode <= 90 && random.nextInt(2) == 0) {
-							shift = true;
-						}
-						// press shift key if required
-						if (shift) {
-							robot.keyPress(16);
-						}
-						// press key
-						robot.keyPress(keycode);
-						// release key
-						robot.keyRelease(keycode);
-						// release shift key if required
-						if (shift) {
-							robot.keyRelease(16);
-						}
-					}, 0, 1, TimeUnit.SECONDS);
-					
-					System.out.println("Keyboard Scheduler Started");
-					displayTray("Roboto", "Keyboard Scheduler Started");
-					
-					keyboardStartButton.setEnabled(false);
-					keyboardStopButton.setEnabled(true);
-				} catch (AWTException e1) {
-					e1.printStackTrace();
-				}
+		keyboardStartButton.addActionListener((event) -> {
+			try {
+				// initialize robot
+				Robot robot = new Robot();
+				
+				// start scheduler to move keyboard every 5 seconds
+				ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
+				keyboardFuture = exec.scheduleAtFixedRate(() -> {
+					// initialize random
+					Random random = new Random();
+					// initialize random keycode
+					int keycode = generateRandomAlphanumericKeyCode();
+					// if alphabet, chance based lower case or upper case
+					boolean shift = false;
+					if (keycode >= 65 && keycode <= 90 && random.nextInt(2) == 0) {
+						shift = true;
+					}
+					// press shift key if required
+					if (shift) {
+						robot.keyPress(16);
+					}
+					// press key
+					robot.keyPress(keycode);
+					// release key
+					robot.keyRelease(keycode);
+					// release shift key if required
+					if (shift) {
+						robot.keyRelease(16);
+					}
+				}, 0, 1, TimeUnit.SECONDS);
+				
+				System.out.println("Keyboard Scheduler Started");
+				displayTray("Roboto", "Keyboard Scheduler Started");
+				
+				keyboardStartButton.setEnabled(false);
+				keyboardStopButton.setEnabled(true);
+			} catch (AWTException e1) {
+				e1.printStackTrace();
 			}
 		});
 		
 		// stop action for keyboard
-		keyboardStopButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				keyboardFuture.cancel(true);
-				
-				System.out.println("Keyboard Scheduler Stopped");
-				displayTray("Roboto", "Keyboard Scheduler Stopped");
-				
-				keyboardStartButton.setEnabled(true);
-				keyboardStopButton.setEnabled(false);
-			}
+		keyboardStopButton.addActionListener((event) -> {
+			keyboardFuture.cancel(true);
+			
+			System.out.println("Keyboard Scheduler Stopped");
+			displayTray("Roboto", "Keyboard Scheduler Stopped");
+			
+			keyboardStartButton.setEnabled(true);
+			keyboardStopButton.setEnabled(false);
 		});
 		
 		// information label action
