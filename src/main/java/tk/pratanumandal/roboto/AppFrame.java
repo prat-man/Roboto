@@ -64,7 +64,7 @@ public class AppFrame extends JFrame {
 		
 		// initialize container which acts as a wrapper for mousePanel and keyboardPanel
 		JPanel container = new JPanel();
-		container.setLayout(new GridLayout(2, 1));
+		container.setLayout(new GridLayout(2, 1, 0, 10));
 		Border padding = BorderFactory.createEmptyBorder(10, 10, 10, 10);
 		container.setBorder(padding);
 		
