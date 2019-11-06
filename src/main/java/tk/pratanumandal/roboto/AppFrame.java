@@ -306,7 +306,7 @@ public class AppFrame extends JFrame {
 	public void displayTray(String title, String message) {
 		initializeTray();
         // display message
-        trayIcon.displayMessage(title, message, MessageType.NONE);
+        trayIcon.displayMessage(title, message, MessageType.INFO);
     }
 	
 }
