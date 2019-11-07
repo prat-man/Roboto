@@ -3,7 +3,6 @@ package tk.pratanumandal.roboto;
 import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -39,12 +38,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
+import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
-
-import org.apache.commons.lang3.SystemUtils;
 
 public class AppFrame extends JFrame {
 	
@@ -53,6 +51,7 @@ public class AppFrame extends JFrame {
 	private ScheduledFuture<?> mouseFuture;
 	private ScheduledFuture<?> keyboardFuture;
 	private ScheduledFuture<?> stopFuture;
+	private ScheduledFuture<?> shutdownFuture;
 	
 	private TrayIcon trayIcon;
 	private Point mousePoint;
@@ -60,6 +59,7 @@ public class AppFrame extends JFrame {
 	public AppFrame() {
 		// call super constructor and set frame title
 		super("Roboto 1.1");
+		
 		
 		// set frame icon
 		try {
@@ -71,8 +71,10 @@ public class AppFrame extends JFrame {
 			exc.printStackTrace();
 		}
 		
+		
 		// initialize tray icon
 		initializeTray();
+		
 		
 		// initialize container which acts as a wrapper for mousePanel and keyboardPanel
 		JPanel container = new JPanel();
@@ -81,6 +83,7 @@ public class AppFrame extends JFrame {
 		container.setBorder(padding);
 		
 		this.add(container, BorderLayout.CENTER);
+		
 		
 		// initialize mouse panel
 		JPanel outerMousePanel = new JPanel();
@@ -124,6 +127,7 @@ public class AppFrame extends JFrame {
 		SpinnerNumberModel mouseSpinnerModel = new SpinnerNumberModel(1, 1, 60, 1);
 		JSpinner mouseSpinner = new JSpinner(mouseSpinnerModel);
 		((JSpinner.DefaultEditor) mouseSpinner.getEditor()).getTextField().setEditable(false);
+		((JSpinner.DefaultEditor) mouseSpinner.getEditor()).getTextField().setBackground(new JTextField().getBackground());
 		mouseBox2.add(mouseSpinner);
 		
 		mouseBox2.add(Box.createRigidArea(new Dimension(5, 5)));
@@ -131,11 +135,14 @@ public class AppFrame extends JFrame {
 		JLabel postMouseLabel = new JLabel("<html>second &nbsp;</html>");
 		mouseBox2.add(postMouseLabel);
 		
+		mouseBox2.add(Box.createRigidArea(new Dimension(2, 2)));
+		
 		mouseBox2.add(Box.createHorizontalGlue());
 		
 		mousePanel.add(mouseBox2);
 		
 		container.add(outerMousePanel);
+		
 		
 		// initialize keyboard panel
 		JPanel outerKeyboardPanel = new JPanel();
@@ -179,12 +186,15 @@ public class AppFrame extends JFrame {
 		SpinnerNumberModel keyboardSpinnerModel = new SpinnerNumberModel(1, 1, 60, 1);
 		JSpinner keyboardSpinner = new JSpinner(keyboardSpinnerModel);
 		((JSpinner.DefaultEditor) keyboardSpinner.getEditor()).getTextField().setEditable(false);
+		((JSpinner.DefaultEditor) keyboardSpinner.getEditor()).getTextField().setBackground(new JTextField().getBackground());
 		keyboardBox2.add(keyboardSpinner);
 		
 		keyboardBox2.add(Box.createRigidArea(new Dimension(5, 5)));
 		
 		JLabel postKeyboardLabel = new JLabel("<html>second &nbsp;</html>");
 		keyboardBox2.add(postKeyboardLabel);
+		
+		keyboardBox2.add(Box.createRigidArea(new Dimension(2, 2)));
 		
 		keyboardBox2.add(Box.createHorizontalGlue());
 		
@@ -193,6 +203,7 @@ public class AppFrame extends JFrame {
 		container.add(outerKeyboardPanel);
 		
 		
+		// initialize control panel
 		JPanel outerControlPanel = new JPanel();
 		outerControlPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 		outerControlPanel.setBorder(new TitledBorder("<html><span style=\"font-size: 1.1em; font-weight: bold;\">Control</span></html>"));
@@ -221,11 +232,11 @@ public class AppFrame extends JFrame {
 		
 		controlPanel.add(controlBox1);
 		
-		/*controlPanel.add(Box.createRigidArea(new Dimension(10, 10)));
+		controlPanel.add(Box.createRigidArea(new Dimension(10, 10)));
 		
 		Box controlBox2 = Box.createHorizontalBox();
 		
-		JLabel preShutdownLabel = new JLabel("Automatically shutdown after");
+		JLabel preShutdownLabel = new JLabel("Shutdown system after");
 		controlBox2.add(preShutdownLabel);
 		
 		controlBox2.add(Box.createRigidArea(new Dimension(5, 5)));
@@ -241,10 +252,9 @@ public class AppFrame extends JFrame {
 		
 		controlBox2.add(Box.createHorizontalGlue());
 		
-		controlPanel.add(controlBox2);*/
+		controlPanel.add(controlBox2);
 		
 		container.add(outerControlPanel);
-		
 		
 		
 		// initialize information panel
@@ -337,25 +347,13 @@ public class AppFrame extends JFrame {
 			String item = (String) stopCombo.getSelectedItem();
 			int time;
 			switch (item) {
-				case "Never":
 				default:
-						time = 0;
-						break;
-				case "15 minutes":
-						time = 15;
-						break;
-				case "30 minutes":
-						time = 30;
-						break;
-				case "1 hour":
-						time = 60;
-						break;
-				case "3 hours":
-						time = 3 * 60;
-						break;
-				case "5 hours":
-						time = 5 * 60;
-						break;
+				case "Never":		time = 0; 		break;
+				case "15 minutes":	time = 15; 		break;
+				case "30 minutes":	time = 30; 		break;
+				case "1 hour":		time = 60; 		break;
+				case "3 hours":		time = 3 * 60; 	break;
+				case "5 hours":		time = 5 * 60; 	break;
 			}
 			if (time == 0) {
 				if (stopFuture != null && !stopFuture.isCancelled() && !stopFuture.isDone()) {
@@ -368,10 +366,56 @@ public class AppFrame extends JFrame {
 				// start scheduler to stop movements after specified time
 				ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
 				stopFuture = exec.schedule(() -> {
-					stopMouse();
-					stopKeyboard();
+					if (stopMouse()) {
+						System.out.println("Mouse Scheduler Stopped");
+						displayTray("Roboto", "Mouse Scheduler Stopped");
+						
+						mouseStartButton.setEnabled(true);
+						mouseStopButton.setEnabled(false);
+					}
+					if (stopKeyboard()) {
+						System.out.println("Keyboard Scheduler Stopped");
+						displayTray("Roboto", "Keyboard Scheduler Stopped");
+						
+						keyboardStartButton.setEnabled(true);
+						keyboardStopButton.setEnabled(false);
+					}
 				}, time, TimeUnit.MINUTES);
 				displayTray("Roboto", "Automatic Stop Scheduled");
+			}
+		});
+		
+		shutdownCombo.addItemListener((event) -> {
+			String item = (String) shutdownCombo.getSelectedItem();
+			int time;
+			switch (item) {
+				default:
+				case "Never":		time = 0; 		break;
+				case "15 minutes":	time = 15; 		break;
+				case "30 minutes":	time = 30; 		break;
+				case "1 hour":		time = 60; 		break;
+				case "3 hours":		time = 3 * 60; 	break;
+				case "5 hours":		time = 5 * 60; 	break;
+			}
+			if (time == 0) {
+				if (shutdownFuture != null && !shutdownFuture.isCancelled() && !shutdownFuture.isDone()) {
+					shutdownFuture.cancel(true);
+					shutdownFuture = null;
+					displayTray("Roboto", "Automatic Shutdown Cancelled");
+				}
+			}
+			else {
+				// start scheduler to stop movements after specified time
+				ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
+				shutdownFuture = exec.schedule(() -> {
+					try {
+						// allow 2 minutes of wait time
+						AppUtils.shutdown(120);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				}, time, TimeUnit.MINUTES);
+				displayTray("Roboto", "Automatic Shutdown Scheduled");
 			}
 		});
 		
@@ -380,7 +424,7 @@ public class AppFrame extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				try {
-					openWebpage(new URI("https://github.com/prat-man/Roboto"));
+					AppUtils.openWebpage(new URI("https://github.com/prat-man/Roboto"));
 				} catch (URISyntaxException exc) {
 					exc.printStackTrace();
 				}
@@ -399,7 +443,7 @@ public class AppFrame extends JFrame {
 			int MAX_X = (int) screenSize.getWidth();
 			int MAX_Y = (int) screenSize.getHeight();
 			
-			// start scheduler to move mouse every 5 seconds
+			// start scheduler to move mouse at specified intervals
 			ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
 			mouseFuture = exec.scheduleAtFixedRate(() -> {
 				Point point = MouseInfo.getPointerInfo().getLocation();
@@ -438,13 +482,13 @@ public class AppFrame extends JFrame {
 			// initialize robot
 			Robot robot = new Robot();
 			
-			// start scheduler to move keyboard every 5 seconds
+			// start scheduler to press keyboard keys at specified intervals
 			ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
 			keyboardFuture = exec.scheduleAtFixedRate(() -> {
 				// initialize random
 				Random random = new Random();
 				// initialize random keycode
-				int keycode = generateRandomKeyCode();
+				int keycode = AppUtils.generateRandomKeyCode();
 				// if alphabet, chance based lower case or upper case
 				// if number, chance based number or symbol
 				boolean shift = false;
@@ -480,51 +524,6 @@ public class AppFrame extends JFrame {
 		keyboardFuture.cancel(true);
 		keyboardFuture = null;
 		return true;
-	}
-	
-	public static int generateRandomKeyCode() {
-		Random random = new Random();
-		if (random.nextInt(3) == 0) {
-			return random.nextInt((57 - 48) + 1) + 48;
-		}
-		else {
-			return random.nextInt((90 - 65) + 1) + 65;
-		}
-	}
-	
-	public static boolean openWebpage(URI uri) {
-		Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
-		if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
-			try {
-				desktop.browse(uri);
-				return true;
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		return false;
-	}
-	
-	public static boolean shutdown(int time) throws IOException {
-	    String shutdownCommand = null, t = time == 0 ? "now" : String.valueOf(time);
-
-	    if(SystemUtils.IS_OS_AIX)
-	        shutdownCommand = "shutdown -Fh " + t;
-	    else if(SystemUtils.IS_OS_FREE_BSD || SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_MAC|| SystemUtils.IS_OS_MAC_OSX || SystemUtils.IS_OS_NET_BSD || SystemUtils.IS_OS_OPEN_BSD || SystemUtils.IS_OS_UNIX)
-	        shutdownCommand = "shutdown -h " + t;
-	    else if(SystemUtils.IS_OS_HP_UX)
-	        shutdownCommand = "shutdown -hy " + t;
-	    else if(SystemUtils.IS_OS_IRIX)
-	        shutdownCommand = "shutdown -y -g " + t;
-	    else if(SystemUtils.IS_OS_SOLARIS || SystemUtils.IS_OS_SUN_OS)
-	        shutdownCommand = "shutdown -y -i5 -g" + t;
-	    else if(SystemUtils.IS_OS_WINDOWS)
-	        shutdownCommand = "shutdown.exe /s /t " + t;
-	    else
-	        return false;
-
-	    Runtime.getRuntime().exec(shutdownCommand);
-	    return true;
 	}
 	
 	public void initializeTray() {
