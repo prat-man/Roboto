@@ -34,6 +34,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -43,12 +44,15 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
+import org.apache.commons.lang3.SystemUtils;
+
 public class AppFrame extends JFrame {
 	
 	private static final long serialVersionUID = -1748889400784668366L;
 	
 	private ScheduledFuture<?> mouseFuture;
 	private ScheduledFuture<?> keyboardFuture;
+	private ScheduledFuture<?> stopFuture;
 	
 	private TrayIcon trayIcon;
 	private Point mousePoint;
@@ -72,7 +76,7 @@ public class AppFrame extends JFrame {
 		
 		// initialize container which acts as a wrapper for mousePanel and keyboardPanel
 		JPanel container = new JPanel();
-		container.setLayout(new GridLayout(2, 1, 0, 10));
+		container.setLayout(new GridLayout(3, 1, 0, 10));
 		Border padding = BorderFactory.createEmptyBorder(10, 10, 10, 10);
 		container.setBorder(padding);
 		
@@ -189,6 +193,60 @@ public class AppFrame extends JFrame {
 		container.add(outerKeyboardPanel);
 		
 		
+		JPanel outerControlPanel = new JPanel();
+		outerControlPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+		outerControlPanel.setBorder(new TitledBorder("<html><span style=\"font-size: 1.1em; font-weight: bold;\">Control</span></html>"));
+		
+		JPanel controlPanel = new JPanel();
+		controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.Y_AXIS));
+		outerControlPanel.add(controlPanel);
+		
+		Box controlBox1 = Box.createHorizontalBox();
+		
+		JLabel preStopLabel = new JLabel("Automatically stop after");
+		controlBox1.add(preStopLabel);
+		
+		controlBox1.add(Box.createRigidArea(new Dimension(5, 5)));
+		
+		JComboBox<String> stopCombo = new JComboBox<>();
+		stopCombo.addItem("Never");
+		stopCombo.addItem("15 minutes");
+		stopCombo.addItem("30 minutes");
+		stopCombo.addItem("1 hour");
+		stopCombo.addItem("3 hours");
+		stopCombo.addItem("5 hours");
+		controlBox1.add(stopCombo);
+		
+		controlBox1.add(Box.createHorizontalGlue());
+		
+		controlPanel.add(controlBox1);
+		
+		/*controlPanel.add(Box.createRigidArea(new Dimension(10, 10)));
+		
+		Box controlBox2 = Box.createHorizontalBox();
+		
+		JLabel preShutdownLabel = new JLabel("Automatically shutdown after");
+		controlBox2.add(preShutdownLabel);
+		
+		controlBox2.add(Box.createRigidArea(new Dimension(5, 5)));
+		
+		JComboBox<String> shutdownCombo = new JComboBox<>();
+		shutdownCombo.addItem("Never");
+		shutdownCombo.addItem("15 minutes");
+		shutdownCombo.addItem("30 minutes");
+		shutdownCombo.addItem("1 hour");
+		shutdownCombo.addItem("3 hours");
+		shutdownCombo.addItem("5 hours");
+		controlBox2.add(shutdownCombo);
+		
+		controlBox2.add(Box.createHorizontalGlue());
+		
+		controlPanel.add(controlBox2);*/
+		
+		container.add(outerControlPanel);
+		
+		
+		
 		// initialize information panel
 		JPanel infoPanel = new JPanel();
 		infoPanel.setBorder(new EmptyBorder(0, 0, 15, 0));
@@ -275,6 +333,48 @@ public class AppFrame extends JFrame {
 			}
 		});
 		
+		stopCombo.addItemListener((event) -> {
+			String item = (String) stopCombo.getSelectedItem();
+			int time;
+			switch (item) {
+				case "Never":
+				default:
+						time = 0;
+						break;
+				case "15 minutes":
+						time = 15;
+						break;
+				case "30 minutes":
+						time = 30;
+						break;
+				case "1 hour":
+						time = 60;
+						break;
+				case "3 hours":
+						time = 3 * 60;
+						break;
+				case "5 hours":
+						time = 5 * 60;
+						break;
+			}
+			if (time == 0) {
+				if (stopFuture != null && !stopFuture.isCancelled() && !stopFuture.isDone()) {
+					stopFuture.cancel(true);
+					stopFuture = null;
+					displayTray("Roboto", "Automatic Stop Cancelled");
+				}
+			}
+			else {
+				// start scheduler to stop movements after specified time
+				ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
+				stopFuture = exec.schedule(() -> {
+					stopMouse();
+					stopKeyboard();
+				}, time, TimeUnit.MINUTES);
+				displayTray("Roboto", "Automatic Stop Scheduled");
+			}
+		});
+		
 		// information label action
 		infoLabel.addMouseListener(new MouseAdapter() {
 			@Override
@@ -325,7 +425,7 @@ public class AppFrame extends JFrame {
 	}
 	
 	public boolean stopMouse() {
-		if (mouseFuture == null || mouseFuture.isCancelled()) {
+		if (mouseFuture == null || mouseFuture.isCancelled() || mouseFuture.isDone()) {
 			return false;
 		}
 		mouseFuture.cancel(true);
@@ -374,7 +474,7 @@ public class AppFrame extends JFrame {
 	}
 	
 	public boolean stopKeyboard() {
-		if (keyboardFuture == null || keyboardFuture.isCancelled()) {
+		if (keyboardFuture == null || keyboardFuture.isCancelled() || keyboardFuture.isDone()) {
 			return false;
 		}
 		keyboardFuture.cancel(true);
@@ -403,6 +503,28 @@ public class AppFrame extends JFrame {
 			}
 		}
 		return false;
+	}
+	
+	public static boolean shutdown(int time) throws IOException {
+	    String shutdownCommand = null, t = time == 0 ? "now" : String.valueOf(time);
+
+	    if(SystemUtils.IS_OS_AIX)
+	        shutdownCommand = "shutdown -Fh " + t;
+	    else if(SystemUtils.IS_OS_FREE_BSD || SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_MAC|| SystemUtils.IS_OS_MAC_OSX || SystemUtils.IS_OS_NET_BSD || SystemUtils.IS_OS_OPEN_BSD || SystemUtils.IS_OS_UNIX)
+	        shutdownCommand = "shutdown -h " + t;
+	    else if(SystemUtils.IS_OS_HP_UX)
+	        shutdownCommand = "shutdown -hy " + t;
+	    else if(SystemUtils.IS_OS_IRIX)
+	        shutdownCommand = "shutdown -y -g " + t;
+	    else if(SystemUtils.IS_OS_SOLARIS || SystemUtils.IS_OS_SUN_OS)
+	        shutdownCommand = "shutdown -y -i5 -g" + t;
+	    else if(SystemUtils.IS_OS_WINDOWS)
+	        shutdownCommand = "shutdown.exe /s /t " + t;
+	    else
+	        return false;
+
+	    Runtime.getRuntime().exec(shutdownCommand);
+	    return true;
 	}
 	
 	public void initializeTray() {
