@@ -2,10 +2,8 @@ package tk.pratanumandal.roboto;
 
 import java.awt.AWTException;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.MouseInfo;
@@ -29,7 +27,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -40,7 +37,6 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
@@ -93,18 +89,18 @@ public class AppFrame extends JFrame {
 		// initialize container which acts as a wrapper for mousePanel and keyboardPanel
 		JPanel container = new JPanel();
 		container.setLayout(new GridLayout2(3, 1, 0, 10));
-		Border padding = BorderFactory.createEmptyBorder(10, 10, 10, 10);
-		container.setBorder(padding);
+		container.setBorder(new EmptyBorder(10, 10, 10, 10));
 		
 		this.add(container, BorderLayout.CENTER);
 		
 		
 		// initialize mouse panel
 		JPanel outerMousePanel = new JPanel();
-		outerMousePanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+		outerMousePanel.setLayout(new BorderLayout());
 		outerMousePanel.setBorder(new TitledBorder("<html><span style=\"font-size: 1.1em; font-weight: bold;\">Mouse</span></html>"));
 		
 		JPanel mousePanel = new JPanel();
+		mousePanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		mousePanel.setLayout(new BoxLayout(mousePanel, BoxLayout.Y_AXIS));
 		outerMousePanel.add(mousePanel);
 		
@@ -159,6 +155,8 @@ public class AppFrame extends JFrame {
 		
 		Box mouseBox3 = Box.createHorizontalBox();
 		
+		mouseBox3.add(Box.createRigidArea(new Dimension(2, 2)));
+		
 		JLabel preMouseStopLabel = new JLabel("Automatically stop after");
 		mouseBox3.add(preMouseStopLabel);
 		
@@ -182,10 +180,11 @@ public class AppFrame extends JFrame {
 		
 		// initialize keyboard panel
 		JPanel outerKeyboardPanel = new JPanel();
-		outerKeyboardPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+		outerKeyboardPanel.setLayout(new BorderLayout());
 		outerKeyboardPanel.setBorder(new TitledBorder("<html><span style=\"font-size: 1.1em; font-weight: bold;\">Keyboard</span></html>"));
 		
 		JPanel keyboardPanel = new JPanel();
+		keyboardPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		keyboardPanel.setLayout(new BoxLayout(keyboardPanel, BoxLayout.Y_AXIS));
 		outerKeyboardPanel.add(keyboardPanel);
 		
@@ -240,6 +239,8 @@ public class AppFrame extends JFrame {
 		
 		Box keyboardBox3 = Box.createHorizontalBox();
 		
+		keyboardBox3.add(Box.createRigidArea(new Dimension(2, 2)));
+		
 		JLabel preKeyboardStopLabel = new JLabel("Automatically stop after");
 		keyboardBox3.add(preKeyboardStopLabel);
 		
@@ -261,22 +262,24 @@ public class AppFrame extends JFrame {
 		container.add(outerKeyboardPanel);
 		
 		
-		// initialize control panel
-		JPanel outerControlPanel = new JPanel();
-		outerControlPanel.setBackground(Color.CYAN);
-		outerControlPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-		outerControlPanel.setBorder(new TitledBorder("<html><span style=\"font-size: 1.1em; font-weight: bold;\">Control</span></html>"));
+		// initialize system panel
+		JPanel outerSystemPanel = new JPanel();
+		outerSystemPanel.setLayout(new BorderLayout());
+		outerSystemPanel.setBorder(new TitledBorder("<html><span style=\"font-size: 1.1em; font-weight: bold;\">System</span></html>"));
 		
-		JPanel controlPanel = new JPanel2(outerControlPanel);
-		controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.Y_AXIS));
-		outerControlPanel.add(controlPanel);
+		JPanel systemPanel = new JPanel();
+		systemPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		systemPanel.setLayout(new BoxLayout(systemPanel, BoxLayout.Y_AXIS));
+		outerSystemPanel.add(systemPanel);
 		
-		Box controlBox1 = Box.createHorizontalBox();
+		Box systemBox1 = Box.createHorizontalBox();
+		
+		systemBox1.add(Box.createRigidArea(new Dimension(2, 2)));
 		
 		JLabel preShutdownLabel = new JLabel("Auto shutdown system after");
-		controlBox1.add(preShutdownLabel);
+		systemBox1.add(preShutdownLabel);
 		
-		controlBox1.add(Box.createRigidArea(new Dimension(5, 5)));
+		systemBox1.add(Box.createRigidArea(new Dimension(5, 5)));
 		
 		this.shutdownCombo = new JComboBox<>();
 		shutdownCombo.addItem("Never");
@@ -285,13 +288,13 @@ public class AppFrame extends JFrame {
 		shutdownCombo.addItem("1 hour");
 		shutdownCombo.addItem("3 hours");
 		shutdownCombo.addItem("5 hours");
-		controlBox1.add(shutdownCombo);
+		systemBox1.add(shutdownCombo);
 		
-		controlBox1.add(Box.createHorizontalGlue());
+		systemBox1.add(Box.createHorizontalGlue());
 		
-		controlPanel.add(controlBox1);
+		systemPanel.add(systemBox1);
 		
-		container.add(outerControlPanel);
+		container.add(outerSystemPanel);
 		
 		
 		// initialize information panel
