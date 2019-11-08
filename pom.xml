@@ -9,8 +9,8 @@
 	<packaging>jar</packaging>
 
 	<name>Roboto</name>
-	<description>Random mouse movement and keyboard key press simulator</description>
 	<url>https://github.com/prat-man/Roboto</url>
+	<description>Random mouse movement and keyboard key press simulator</description>
 
 	<developers>
 		<developer>
@@ -19,6 +19,13 @@
 			<url>https://pratanumandal.tk</url>
 		</developer>
 	</developers>
+
+	<licenses>
+		<license>
+			<name>GNU General Public License (GPL), Version 3.0</name>
+			<url>http://www.gnu.org/licenses/gpl-3.0.html</url>
+		</license>
+	</licenses>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -64,7 +71,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
 			<plugin>
 				<groupId>com.github.wvengen</groupId>
 				<artifactId>proguard-maven-plugin</artifactId>
