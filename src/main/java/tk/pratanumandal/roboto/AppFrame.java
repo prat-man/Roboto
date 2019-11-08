@@ -2,10 +2,10 @@ package tk.pratanumandal.roboto;
 
 import java.awt.AWTException;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.MouseInfo;
@@ -50,11 +50,25 @@ public class AppFrame extends JFrame {
 	
 	private ScheduledFuture<?> mouseFuture;
 	private ScheduledFuture<?> keyboardFuture;
-	private ScheduledFuture<?> stopFuture;
+	private ScheduledFuture<?> mouseStopFuture;
+	private ScheduledFuture<?> keyboardStopFuture;
 	private ScheduledFuture<?> shutdownFuture;
 	
 	private TrayIcon trayIcon;
 	private Point mousePoint;
+	
+	private JButton mouseStartButton;
+	private JButton mouseStopButton;
+	private JComboBox<String> mouseStopCombo;
+	
+	private JButton keyboardStartButton;
+	private JButton keyboardStopButton;
+	private JComboBox<String> keyboardStopCombo;
+	
+	private JComboBox<String> shutdownCombo;
+	
+	private String currentMouseStop;
+	private String currentKeyboardStop;
 	
 	public AppFrame() {
 		// call super constructor and set frame title
@@ -78,7 +92,7 @@ public class AppFrame extends JFrame {
 		
 		// initialize container which acts as a wrapper for mousePanel and keyboardPanel
 		JPanel container = new JPanel();
-		container.setLayout(new GridLayout(3, 1, 0, 10));
+		container.setLayout(new GridLayout2(3, 1, 0, 10));
 		Border padding = BorderFactory.createEmptyBorder(10, 10, 10, 10);
 		container.setBorder(padding);
 		
@@ -96,14 +110,14 @@ public class AppFrame extends JFrame {
 		
 		Box mouseBox1 = Box.createHorizontalBox();
 		
-		JButton mouseStartButton = new JButton("Start");
+		this.mouseStartButton = new JButton("Start");
 		mouseStartButton.setMargin(new Insets(3, 35, 3, 35));
 		mouseStartButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		mouseBox1.add(mouseStartButton);
 		
 		mouseBox1.add(Box.createRigidArea(new Dimension(5, 5)));
 		
-		JButton mouseStopButton = new JButton("Stop");
+		this.mouseStopButton = new JButton("Stop");
 		mouseStopButton.setMargin(new Insets(3, 35, 3, 35));
 		mouseStopButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		mouseStopButton.setEnabled(false);
@@ -132,7 +146,7 @@ public class AppFrame extends JFrame {
 		
 		mouseBox2.add(Box.createRigidArea(new Dimension(5, 5)));
 		
-		JLabel postMouseLabel = new JLabel("<html>second &nbsp;</html>");
+		JLabel postMouseLabel = new JLabel("second(s)");
 		mouseBox2.add(postMouseLabel);
 		
 		mouseBox2.add(Box.createRigidArea(new Dimension(2, 2)));
@@ -140,6 +154,28 @@ public class AppFrame extends JFrame {
 		mouseBox2.add(Box.createHorizontalGlue());
 		
 		mousePanel.add(mouseBox2);
+		
+		mousePanel.add(Box.createRigidArea(new Dimension(10, 10)));
+		
+		Box mouseBox3 = Box.createHorizontalBox();
+		
+		JLabel preMouseStopLabel = new JLabel("Automatically stop after");
+		mouseBox3.add(preMouseStopLabel);
+		
+		mouseBox3.add(Box.createRigidArea(new Dimension(5, 5)));
+		
+		this.mouseStopCombo = new JComboBox<>();
+		mouseStopCombo.addItem("Never");
+		mouseStopCombo.addItem("15 minutes");
+		mouseStopCombo.addItem("30 minutes");
+		mouseStopCombo.addItem("1 hour");
+		mouseStopCombo.addItem("3 hours");
+		mouseStopCombo.addItem("5 hours");
+		mouseBox3.add(mouseStopCombo);
+		
+		mouseBox3.add(Box.createHorizontalGlue());
+		
+		mousePanel.add(mouseBox3);
 		
 		container.add(outerMousePanel);
 		
@@ -155,14 +191,14 @@ public class AppFrame extends JFrame {
 		
 		Box keyboardBox1 = Box.createHorizontalBox();
 		
-		JButton keyboardStartButton = new JButton("Start");
+		this.keyboardStartButton = new JButton("Start");
 		keyboardStartButton.setMargin(new Insets(3, 35, 3, 35));
 		keyboardStartButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		keyboardBox1.add(keyboardStartButton);
 		
 		keyboardBox1.add(Box.createRigidArea(new Dimension(5, 5)));
 		
-		JButton keyboardStopButton = new JButton("Stop");
+		this.keyboardStopButton = new JButton("Stop");
 		keyboardStopButton.setMargin(new Insets(3, 35, 3, 35));
 		keyboardStopButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		keyboardStopButton.setEnabled(false);
@@ -191,7 +227,7 @@ public class AppFrame extends JFrame {
 		
 		keyboardBox2.add(Box.createRigidArea(new Dimension(5, 5)));
 		
-		JLabel postKeyboardLabel = new JLabel("<html>second &nbsp;</html>");
+		JLabel postKeyboardLabel = new JLabel("second(s)");
 		keyboardBox2.add(postKeyboardLabel);
 		
 		keyboardBox2.add(Box.createRigidArea(new Dimension(2, 2)));
@@ -200,59 +236,60 @@ public class AppFrame extends JFrame {
 		
 		keyboardPanel.add(keyboardBox2);
 		
+		keyboardPanel.add(Box.createRigidArea(new Dimension(10, 10)));
+		
+		Box keyboardBox3 = Box.createHorizontalBox();
+		
+		JLabel preKeyboardStopLabel = new JLabel("Automatically stop after");
+		keyboardBox3.add(preKeyboardStopLabel);
+		
+		keyboardBox3.add(Box.createRigidArea(new Dimension(5, 5)));
+		
+		this.keyboardStopCombo = new JComboBox<>();
+		keyboardStopCombo.addItem("Never");
+		keyboardStopCombo.addItem("15 minutes");
+		keyboardStopCombo.addItem("30 minutes");
+		keyboardStopCombo.addItem("1 hour");
+		keyboardStopCombo.addItem("3 hours");
+		keyboardStopCombo.addItem("5 hours");
+		keyboardBox3.add(keyboardStopCombo);
+		
+		keyboardBox3.add(Box.createHorizontalGlue());
+		
+		keyboardPanel.add(keyboardBox3);
+		
 		container.add(outerKeyboardPanel);
 		
 		
 		// initialize control panel
 		JPanel outerControlPanel = new JPanel();
+		outerControlPanel.setBackground(Color.CYAN);
 		outerControlPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 		outerControlPanel.setBorder(new TitledBorder("<html><span style=\"font-size: 1.1em; font-weight: bold;\">Control</span></html>"));
 		
-		JPanel controlPanel = new JPanel();
+		JPanel controlPanel = new JPanel2(outerControlPanel);
 		controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.Y_AXIS));
 		outerControlPanel.add(controlPanel);
 		
 		Box controlBox1 = Box.createHorizontalBox();
 		
-		JLabel preStopLabel = new JLabel("Automatically stop after");
-		controlBox1.add(preStopLabel);
+		JLabel preShutdownLabel = new JLabel("Auto shutdown system after");
+		controlBox1.add(preShutdownLabel);
 		
 		controlBox1.add(Box.createRigidArea(new Dimension(5, 5)));
 		
-		JComboBox<String> stopCombo = new JComboBox<>();
-		stopCombo.addItem("Never");
-		stopCombo.addItem("15 minutes");
-		stopCombo.addItem("30 minutes");
-		stopCombo.addItem("1 hour");
-		stopCombo.addItem("3 hours");
-		stopCombo.addItem("5 hours");
-		controlBox1.add(stopCombo);
-		
-		controlBox1.add(Box.createHorizontalGlue());
-		
-		controlPanel.add(controlBox1);
-		
-		controlPanel.add(Box.createRigidArea(new Dimension(10, 10)));
-		
-		Box controlBox2 = Box.createHorizontalBox();
-		
-		JLabel preShutdownLabel = new JLabel("Shutdown system after");
-		controlBox2.add(preShutdownLabel);
-		
-		controlBox2.add(Box.createRigidArea(new Dimension(5, 5)));
-		
-		JComboBox<String> shutdownCombo = new JComboBox<>();
+		this.shutdownCombo = new JComboBox<>();
 		shutdownCombo.addItem("Never");
 		shutdownCombo.addItem("15 minutes");
 		shutdownCombo.addItem("30 minutes");
 		shutdownCombo.addItem("1 hour");
 		shutdownCombo.addItem("3 hours");
 		shutdownCombo.addItem("5 hours");
-		controlBox2.add(shutdownCombo);
+		controlBox1.add(shutdownCombo);
 		
-		controlBox2.add(Box.createHorizontalGlue());
+		controlBox1.add(Box.createHorizontalGlue());
 		
-		controlPanel.add(controlBox2);
+		controlPanel.add(controlBox1);
 		
 		container.add(outerControlPanel);
 		
@@ -277,6 +314,12 @@ public class AppFrame extends JFrame {
 				System.out.println("Mouse Scheduler Started");
 				displayTray("Roboto", "Mouse Scheduler Started");
 				
+				if (autoStopMouse()) {
+					System.out.println("Mouse Automatic Stop Started");
+				} else {
+					System.out.println("Failed to start Mouse Automatic Stop");
+				}
+				
 				mouseStartButton.setEnabled(false);
 				mouseStopButton.setEnabled(true);
 			}
@@ -287,6 +330,12 @@ public class AppFrame extends JFrame {
 			if (stopMouse()) {
 				System.out.println("Mouse Scheduler Stopped");
 				displayTray("Roboto", "Mouse Scheduler Stopped");
+				
+				if (cancelAutoStopMouse()) {
+					System.out.println("Mouse Automatic Stop Cancelled");
+				} else {
+					System.out.println("Failed to cancel Mouse Automatic Stop");
+				}
 				
 				mouseStartButton.setEnabled(true);
 				mouseStopButton.setEnabled(false);
@@ -299,10 +348,15 @@ public class AppFrame extends JFrame {
 			if (stopMouse()) {
 				startMouse(value);
 			}
-			if (value == 1) {
-				postMouseLabel.setText("second");
+		});
+		
+		mouseStopCombo.addActionListener((event) -> {
+			if (autoStopMouse()) {
+				System.out.println("Mouse Automatic Stop Changed");
+			} else if (mouseFuture != null && !mouseFuture.isCancelled() && !mouseFuture.isDone()) {
+				System.out.println("Mouse Automatic Stop Cancelled");
 			} else {
-				postMouseLabel.setText("seconds");
+				System.out.println("Mouse Automatic Stop Changed");
 			}
 		});
 		
@@ -313,6 +367,12 @@ public class AppFrame extends JFrame {
 			if (startKeyboard(value)) {
 				System.out.println("Keyboard Scheduler Started");
 				displayTray("Roboto", "Keyboard Scheduler Started");
+				
+				if (autoStopKeyboard()) {
+					System.out.println("Keyboard Automatic Stop Started");
+				} else {
+					System.out.println("Failed to start Keyboard Automatic Stop");
+				}
 				
 				keyboardStartButton.setEnabled(false);
 				keyboardStopButton.setEnabled(true);
@@ -325,6 +385,12 @@ public class AppFrame extends JFrame {
 				System.out.println("Keyboard Scheduler Stopped");
 				displayTray("Roboto", "Keyboard Scheduler Stopped");
 				
+				if (cancelAutoStopKeyboard()) {
+					System.out.println("Keyboard Automatic Stop Cancelled");
+				} else {
+					System.out.println("Failed to cancel Keyboard Automatic Stop");
+				}
+				
 				keyboardStartButton.setEnabled(true);
 				keyboardStopButton.setEnabled(false);
 			}
@@ -336,87 +402,21 @@ public class AppFrame extends JFrame {
 			if (stopKeyboard()) {
 				startKeyboard(value);
 			}
-			if (value == 1) {
-				postKeyboardLabel.setText("second");
+		});
+		
+		keyboardStopCombo.addActionListener((event) -> {
+			if (autoStopKeyboard()) {
+				System.out.println("Keyboard Automatic Stop Changed");
+			} else if (keyboardFuture != null && !keyboardFuture.isCancelled() && !keyboardFuture.isDone()) {
+				System.out.println("Keyboard Automatic Stop Cancelled");
 			} else {
-				postKeyboardLabel.setText("seconds");
+				System.out.println("Keyboard Automatic Stop Changed");
 			}
 		});
 		
-		stopCombo.addItemListener((event) -> {
-			String item = (String) stopCombo.getSelectedItem();
-			int time;
-			switch (item) {
-				default:
-				case "Never":		time = 0; 		break;
-				case "15 minutes":	time = 15; 		break;
-				case "30 minutes":	time = 30; 		break;
-				case "1 hour":		time = 60; 		break;
-				case "3 hours":		time = 3 * 60; 	break;
-				case "5 hours":		time = 5 * 60; 	break;
-			}
-			if (time == 0) {
-				if (stopFuture != null && !stopFuture.isCancelled() && !stopFuture.isDone()) {
-					stopFuture.cancel(true);
-					stopFuture = null;
-					displayTray("Roboto", "Automatic Stop Cancelled");
-				}
-			}
-			else {
-				// start scheduler to stop movements after specified time
-				ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
-				stopFuture = exec.schedule(() -> {
-					if (stopMouse()) {
-						System.out.println("Mouse Scheduler Stopped");
-						displayTray("Roboto", "Mouse Scheduler Stopped");
-						
-						mouseStartButton.setEnabled(true);
-						mouseStopButton.setEnabled(false);
-					}
-					if (stopKeyboard()) {
-						System.out.println("Keyboard Scheduler Stopped");
-						displayTray("Roboto", "Keyboard Scheduler Stopped");
-						
-						keyboardStartButton.setEnabled(true);
-						keyboardStopButton.setEnabled(false);
-					}
-				}, time, TimeUnit.MINUTES);
-				displayTray("Roboto", "Automatic Stop Scheduled");
-			}
-		});
-		
+		// handle shutdown scheduler
 		shutdownCombo.addItemListener((event) -> {
-			String item = (String) shutdownCombo.getSelectedItem();
-			int time;
-			switch (item) {
-				default:
-				case "Never":		time = 0; 		break;
-				case "15 minutes":	time = 15; 		break;
-				case "30 minutes":	time = 30; 		break;
-				case "1 hour":		time = 60; 		break;
-				case "3 hours":		time = 3 * 60; 	break;
-				case "5 hours":		time = 5 * 60; 	break;
-			}
-			if (time == 0) {
-				if (shutdownFuture != null && !shutdownFuture.isCancelled() && !shutdownFuture.isDone()) {
-					shutdownFuture.cancel(true);
-					shutdownFuture = null;
-					displayTray("Roboto", "Automatic Shutdown Cancelled");
-				}
-			}
-			else {
-				// start scheduler to stop movements after specified time
-				ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
-				shutdownFuture = exec.schedule(() -> {
-					try {
-						// allow 2 minutes of wait time
-						AppUtils.shutdown(120);
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
-				}, time, TimeUnit.MINUTES);
-				displayTray("Roboto", "Automatic Shutdown Scheduled");
-			}
+			autoShutdown();
 		});
 		
 		// information label action
@@ -477,6 +477,59 @@ public class AppFrame extends JFrame {
 		return true;
 	}
 	
+	public boolean autoStopMouse() {
+		if (mouseFuture != null && !mouseFuture.isCancelled() && !mouseFuture.isDone()) {
+			String item = (String) mouseStopCombo.getSelectedItem();
+			if (item.equals(currentMouseStop)) {
+				return true;
+			} else {
+				currentMouseStop = item;
+			}
+			int time;
+			switch (item) {
+				default:
+				case "Never":		time = 0; 		break;
+				case "15 minutes":	time = 15; 		break;
+				case "30 minutes":	time = 30; 		break;
+				case "1 hour":		time = 60; 		break;
+				case "3 hours":		time = 3 * 60; 	break;
+				case "5 hours":		time = 5 * 60; 	break;
+			}
+			if (time == 0) {
+				if (mouseStopFuture != null && !mouseStopFuture.isCancelled() && !mouseStopFuture.isDone()) {
+					mouseStopFuture.cancel(true);
+					mouseStopFuture = null;
+					return false;
+				}
+			}
+			else {
+				// start scheduler to stop movements after specified time
+				ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
+				mouseStopFuture = exec.schedule(() -> {
+					if (stopMouse()) {
+						System.out.println("Mouse Scheduler Stopped");
+						displayTray("Roboto", "Mouse Scheduler Stopped");
+						
+						mouseStartButton.setEnabled(true);
+						mouseStopButton.setEnabled(false);
+					}
+				}, time, TimeUnit.MINUTES);
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public boolean cancelAutoStopMouse() {
+		if (mouseStopFuture == null || mouseStopFuture.isCancelled() || mouseStopFuture.isDone()) {
+			return false;
+		}
+		mouseStopFuture.cancel(true);
+		mouseStopFuture = null;
+		return true;
+	}
+	
 	public boolean startKeyboard(int value) {
 		try {
 			// initialize robot
@@ -524,6 +577,93 @@ public class AppFrame extends JFrame {
 		keyboardFuture.cancel(true);
 		keyboardFuture = null;
 		return true;
+	}
+	
+	public boolean autoStopKeyboard() {
+		if (keyboardFuture != null && !keyboardFuture.isCancelled() && !keyboardFuture.isDone()) {
+			String item = (String) keyboardStopCombo.getSelectedItem();
+			if (item.equals(currentKeyboardStop)) {
+				return true;
+			} else {
+				currentKeyboardStop = item;
+			}
+			int time;
+			switch (item) {
+				default:
+				case "Never":		time = 0; 		break;
+				case "15 minutes":	time = 15; 		break;
+				case "30 minutes":	time = 30; 		break;
+				case "1 hour":		time = 60; 		break;
+				case "3 hours":		time = 3 * 60; 	break;
+				case "5 hours":		time = 5 * 60; 	break;
+			}
+			if (time == 0) {
+				if (keyboardStopFuture != null && !keyboardStopFuture.isCancelled() && !keyboardStopFuture.isDone()) {
+					keyboardStopFuture.cancel(true);
+					keyboardStopFuture = null;
+					return false;
+				}
+			}
+			else {
+				// start scheduler to stop movements after specified time
+				ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
+				keyboardStopFuture = exec.schedule(() -> {
+					if (stopKeyboard()) {
+						System.out.println("Keyboard Scheduler Stopped");
+						displayTray("Roboto", "Keyboard Scheduler Stopped");
+						
+						keyboardStartButton.setEnabled(true);
+						keyboardStopButton.setEnabled(false);
+					}
+				}, time, TimeUnit.MINUTES);
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public boolean cancelAutoStopKeyboard() {
+		if (keyboardStopFuture == null || keyboardStopFuture.isCancelled() || keyboardStopFuture.isDone()) {
+			return false;
+		}
+		keyboardStopFuture.cancel(true);
+		keyboardStopFuture = null;
+		return true;
+	}
+	
+	public void autoShutdown() {
+		String item = (String) shutdownCombo.getSelectedItem();
+		int time;
+		switch (item) {
+			default:
+			case "Never":		time = 0; 		break;
+			case "15 minutes":	time = 15; 		break;
+			case "30 minutes":	time = 30; 		break;
+			case "1 hour":		time = 60; 		break;
+			case "3 hours":		time = 3 * 60; 	break;
+			case "5 hours":		time = 5 * 60; 	break;
+		}
+		if (time == 0) {
+			if (shutdownFuture != null && !shutdownFuture.isCancelled() && !shutdownFuture.isDone()) {
+				shutdownFuture.cancel(true);
+				shutdownFuture = null;
+				displayTray("Roboto", "Automatic Shutdown Cancelled");
+			}
+		}
+		else {
+			// start scheduler to stop movements after specified time
+			ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
+			shutdownFuture = exec.schedule(() -> {
+				try {
+					// allow 2 minutes of wait time
+					AppUtils.shutdown(120);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			}, time, TimeUnit.MINUTES);
+			displayTray("Roboto", "Automatic Shutdown Scheduled");
+		}
 	}
 	
 	public void initializeTray() {
