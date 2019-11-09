@@ -45,6 +45,16 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>3.9</version>
 		</dependency>
+		<dependency>
+			<groupId>com.dorkbox</groupId>
+			<artifactId>Utilities</artifactId> 
+			<version>1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.dorkbox</groupId> 
+			<artifactId>TweenEngine</artifactId>
+			<version>8.3</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -92,6 +102,7 @@
 								<option>-keep public class tk.pratanumandal.roboto.App { *; }</option>
 								<option>-optimizationpasses 5</option>
 								<option>-overloadaggressively</option>
+								<option>-ignorewarnings</option>
 							</options>
 							<libs>
 								<lib>${java.home}</lib>

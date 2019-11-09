@@ -27,6 +27,9 @@ import java.util.Random;
 
 import org.apache.commons.lang3.SystemUtils;
 
+import dorkbox.notify.Pos;
+import dorkbox.notify.Notify;
+
 public class AppUtils {
 
 	public static int generateRandomKeyCode() {
@@ -72,6 +75,17 @@ public class AppUtils {
 
 	    Runtime.getRuntime().exec(shutdownCommand);
 	    return true;
+	}
+	
+	public static void notify(String title, String message) {
+		Notify.create()
+			  .title(title)
+			  .text(message)
+			  .position(Pos.TOP_RIGHT)
+			  .hideAfter(3000)
+			  //.hideCloseButton()
+			  .darkStyle()
+			  .show();
 	}
 	
 }

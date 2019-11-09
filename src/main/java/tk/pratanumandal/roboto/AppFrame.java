@@ -24,15 +24,11 @@ import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Image;
 import java.awt.Insets;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Robot;
-import java.awt.SystemTray;
 import java.awt.Toolkit;
-import java.awt.TrayIcon;
-import java.awt.TrayIcon.MessageType;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -70,7 +66,6 @@ public class AppFrame extends JFrame {
 	private ScheduledFuture<?> keyboardStopFuture;
 	private ScheduledFuture<?> shutdownFuture;
 	
-	private TrayIcon trayIcon;
 	private Point mousePoint;
 	
 	private JButton mouseStartButton;
@@ -100,10 +95,6 @@ public class AppFrame extends JFrame {
 		} catch (IOException exc) {
 			exc.printStackTrace();
 		}
-		
-		
-		// initialize tray icon
-		initializeTray();
 		
 		
 		// initialize container which acts as a wrapper for mousePanel and keyboardPanel
@@ -335,7 +326,7 @@ public class AppFrame extends JFrame {
 			
 			if (startMouse(value)) {
 				System.out.println("Mouse Scheduler Started");
-				displayTray("Roboto", "Mouse Scheduler Started");
+				AppUtils.notify("Roboto", "Mouse Scheduler Started");
 				
 				if (autoStopMouse()) {
 					System.out.println("Mouse Automatic Stop Started");
@@ -352,7 +343,7 @@ public class AppFrame extends JFrame {
 		mouseStopButton.addActionListener((event) -> {
 			if (stopMouse()) {
 				System.out.println("Mouse Scheduler Stopped");
-				displayTray("Roboto", "Mouse Scheduler Stopped");
+				AppUtils.notify("Roboto", "Mouse Scheduler Stopped");
 				
 				if (cancelAutoStopMouse()) {
 					System.out.println("Mouse Automatic Stop Cancelled");
@@ -381,10 +372,10 @@ public class AppFrame extends JFrame {
 			
 			if (autoStopMouse()) {
 				System.out.println("Mouse Automatic Stop Changed");
-				displayTray("Roboto", "Mouse Automatic Stop Changed");
+				AppUtils.notify("Roboto", "Mouse Automatic Stop Changed");
 			} else if (mouseFuture != null && !mouseFuture.isCancelled() && !mouseFuture.isDone()) {
 				System.out.println("Mouse Automatic Stop Cancelled");
-				displayTray("Roboto", "Mouse Automatic Stop Cancelled");
+				AppUtils.notify("Roboto", "Mouse Automatic Stop Cancelled");
 			} else {
 				System.out.println("Mouse Automatic Stop Changed");
 			}
@@ -396,7 +387,7 @@ public class AppFrame extends JFrame {
 			
 			if (startKeyboard(value)) {
 				System.out.println("Keyboard Scheduler Started");
-				displayTray("Roboto", "Keyboard Scheduler Started");
+				AppUtils.notify("Roboto", "Keyboard Scheduler Started");
 				
 				if (autoStopKeyboard()) {
 					System.out.println("Keyboard Automatic Stop Started");
@@ -413,7 +404,7 @@ public class AppFrame extends JFrame {
 		keyboardStopButton.addActionListener((event) -> {
 			if (stopKeyboard()) {
 				System.out.println("Keyboard Scheduler Stopped");
-				displayTray("Roboto", "Keyboard Scheduler Stopped");
+				AppUtils.notify("Roboto", "Keyboard Scheduler Stopped");
 				
 				if (cancelAutoStopKeyboard()) {
 					System.out.println("Keyboard Automatic Stop Cancelled");
@@ -442,17 +433,17 @@ public class AppFrame extends JFrame {
 			
 			if (autoStopKeyboard()) {
 				System.out.println("Keyboard Automatic Stop Changed");
-				displayTray("Roboto", "Keyboard Automatic Stop Changed");
+				AppUtils.notify("Roboto", "Keyboard Automatic Stop Changed");
 			} else if (keyboardFuture != null && !keyboardFuture.isCancelled() && !keyboardFuture.isDone()) {
 				System.out.println("Keyboard Automatic Stop Cancelled");
-				displayTray("Roboto", "Keyboard Automatic Stop Cancelled");
+				AppUtils.notify("Roboto", "Keyboard Automatic Stop Cancelled");
 			} else {
 				System.out.println("Keyboard Automatic Stop Changed");
 			}
 		});
 		
 		// handle shutdown scheduler
-		shutdownCombo.addItemListener((event) -> {
+		shutdownCombo.addActionListener((event) -> {
 			autoShutdown();
 		});
 		
@@ -545,7 +536,7 @@ public class AppFrame extends JFrame {
 				mouseStopFuture = exec.schedule(() -> {
 					if (stopMouse()) {
 						System.out.println("Mouse Scheduler Stopped");
-						displayTray("Roboto", "Mouse Scheduler Stopped");
+						AppUtils.notify("Roboto", "Mouse Scheduler Stopped");
 						
 						mouseStartButton.setEnabled(true);
 						mouseStopButton.setEnabled(false);
@@ -647,7 +638,7 @@ public class AppFrame extends JFrame {
 				keyboardStopFuture = exec.schedule(() -> {
 					if (stopKeyboard()) {
 						System.out.println("Keyboard Scheduler Stopped");
-						displayTray("Roboto", "Keyboard Scheduler Stopped");
+						AppUtils.notify("Roboto", "Keyboard Scheduler Stopped");
 						
 						keyboardStartButton.setEnabled(true);
 						keyboardStopButton.setEnabled(false);
@@ -685,7 +676,7 @@ public class AppFrame extends JFrame {
 			if (shutdownFuture != null && !shutdownFuture.isCancelled() && !shutdownFuture.isDone()) {
 				shutdownFuture.cancel(true);
 				shutdownFuture = null;
-				displayTray("Roboto", "Automatic Shutdown Cancelled");
+				AppUtils.notify("Roboto", "Automatic Shutdown Cancelled");
 			}
 		}
 		else {
@@ -699,55 +690,8 @@ public class AppFrame extends JFrame {
 					e1.printStackTrace();
 				}
 			}, time, TimeUnit.MINUTES);
-			displayTray("Roboto", "Automatic Shutdown Scheduled");
+			AppUtils.notify("Roboto", "Automatic Shutdown Scheduled");
 		}
 	}
-	
-	public void initializeTray() {
-		if (trayIcon == null) {
-	        // obtain only one instance of the SystemTray object
-	        SystemTray tray = SystemTray.getSystemTray();
-	        
-	        // obtain image
-			Image image = Toolkit.getDefaultToolkit().createImage(getClass().getClassLoader().getResource("robot.png"));
-	
-			// create tray icon
-	        trayIcon = new TrayIcon(image, "Roboto");
-	        
-	        // let the system resize the image if needed
-	        trayIcon.setImageAutoSize(true);
-	        
-	        // set tooltip text for the tray icon
-	        trayIcon.setToolTip("Roboto");
-	        
-	        trayIcon.addMouseListener(new MouseAdapter() {
-	        	@Override
-	        	public void mouseClicked(MouseEvent e) {
-	        		if (AppFrame.this.getState() == JFrame.ICONIFIED) {
-		        		AppFrame.this.setState(JFrame.NORMAL);
-		        		AppFrame.this.toFront();
-		        		super.mouseClicked(e);
-	        		}
-	        		else {
-	        			AppFrame.this.setState(JFrame.ICONIFIED);
-		        		super.mouseClicked(e);
-	        		}
-	        	}
-			});
-	        
-	        // add trayicon to system tray
-	        try {
-				tray.add(trayIcon);
-			} catch (AWTException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	public void displayTray(String title, String message) {
-		initializeTray();
-        // display message
-        trayIcon.displayMessage(title, message, MessageType.INFO);
-    }
 	
 }
