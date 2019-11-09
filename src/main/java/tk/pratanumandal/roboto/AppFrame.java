@@ -374,10 +374,17 @@ public class AppFrame extends JFrame {
 		});
 		
 		mouseStopCombo.addActionListener((event) -> {
+			String item = (String) mouseStopCombo.getSelectedItem();
+			if (item.equals(currentMouseStop)) {
+				return;
+			}
+			
 			if (autoStopMouse()) {
 				System.out.println("Mouse Automatic Stop Changed");
+				displayTray("Roboto", "Mouse Automatic Stop Changed");
 			} else if (mouseFuture != null && !mouseFuture.isCancelled() && !mouseFuture.isDone()) {
 				System.out.println("Mouse Automatic Stop Cancelled");
+				displayTray("Roboto", "Mouse Automatic Stop Cancelled");
 			} else {
 				System.out.println("Mouse Automatic Stop Changed");
 			}
@@ -428,10 +435,17 @@ public class AppFrame extends JFrame {
 		});
 		
 		keyboardStopCombo.addActionListener((event) -> {
+			String item = (String) keyboardStopCombo.getSelectedItem();
+			if (item.equals(currentKeyboardStop)) {
+				return;
+			}
+			
 			if (autoStopKeyboard()) {
 				System.out.println("Keyboard Automatic Stop Changed");
+				displayTray("Roboto", "Keyboard Automatic Stop Changed");
 			} else if (keyboardFuture != null && !keyboardFuture.isCancelled() && !keyboardFuture.isDone()) {
 				System.out.println("Keyboard Automatic Stop Cancelled");
+				displayTray("Roboto", "Keyboard Automatic Stop Cancelled");
 			} else {
 				System.out.println("Keyboard Automatic Stop Changed");
 			}
@@ -483,6 +497,8 @@ public class AppFrame extends JFrame {
 				}
 			}, value, value, TimeUnit.SECONDS);
 			
+			currentMouseStop = null;
+			
 			return true;
 		}
 		catch (AWTException e) {
@@ -503,11 +519,8 @@ public class AppFrame extends JFrame {
 	public boolean autoStopMouse() {
 		if (mouseFuture != null && !mouseFuture.isCancelled() && !mouseFuture.isDone()) {
 			String item = (String) mouseStopCombo.getSelectedItem();
-			if (item.equals(currentMouseStop)) {
-				return true;
-			} else {
-				currentMouseStop = item;
-			}
+			currentMouseStop = item;
+			
 			int time;
 			switch (item) {
 				default:
@@ -518,6 +531,7 @@ public class AppFrame extends JFrame {
 				case "3 hours":		time = 3 * 60; 	break;
 				case "5 hours":		time = 5 * 60; 	break;
 			}
+			
 			if (time == 0) {
 				if (mouseStopFuture != null && !mouseStopFuture.isCancelled() && !mouseStopFuture.isDone()) {
 					mouseStopFuture.cancel(true);
@@ -585,6 +599,8 @@ public class AppFrame extends JFrame {
 				}
 			}, value, value, TimeUnit.SECONDS);
 			
+			currentKeyboardStop = null;
+			
 			return true;
 		}
 		catch (AWTException e) {
@@ -605,11 +621,8 @@ public class AppFrame extends JFrame {
 	public boolean autoStopKeyboard() {
 		if (keyboardFuture != null && !keyboardFuture.isCancelled() && !keyboardFuture.isDone()) {
 			String item = (String) keyboardStopCombo.getSelectedItem();
-			if (item.equals(currentKeyboardStop)) {
-				return true;
-			} else {
-				currentKeyboardStop = item;
-			}
+			currentKeyboardStop = item;
+			
 			int time;
 			switch (item) {
 				default:
@@ -620,6 +633,7 @@ public class AppFrame extends JFrame {
 				case "3 hours":		time = 3 * 60; 	break;
 				case "5 hours":		time = 5 * 60; 	break;
 			}
+			
 			if (time == 0) {
 				if (keyboardStopFuture != null && !keyboardStopFuture.isCancelled() && !keyboardStopFuture.isDone()) {
 					keyboardStopFuture.cancel(true);
