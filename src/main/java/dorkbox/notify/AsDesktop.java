@@ -15,6 +15,7 @@
  */
 package dorkbox.notify;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -48,6 +49,8 @@ class AsDesktop extends JWindow implements INotify {
     @SuppressWarnings("NumericCastThatLosesPrecision")
     AsDesktop(final Notify notification, final ImageIcon image, final Theme theme) {
         this.notification = notification;
+        
+        setBackground(new Color(0, 0, 0, 0));
 
         setAlwaysOnTop(true);
 

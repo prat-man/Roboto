@@ -69,6 +69,8 @@ class NotifyCanvas extends Canvas {
         this.imageIcon = imageIcon;
         this.theme = theme;
         this.parentWindow = parentWindow;
+        
+        setBackground(new Color(0, 0, 0, 0));
 
         final Dimension preferredSize = new Dimension(WIDTH, HEIGHT);
         setPreferredSize(preferredSize);
@@ -153,6 +155,9 @@ class NotifyCanvas extends Canvas {
             g2.fillRect(0, PROGRESS_HEIGHT, progress, 2);
         } finally {
             g2.dispose();
+            if (parentWindow != null) {
+            	parentWindow.repaint();
+            }
         }
     }
 
@@ -182,7 +187,7 @@ class NotifyCanvas extends Canvas {
         g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
         try {
-            g2.setColor(new Color(theme.panel_BG.getRed(), theme.panel_BG.getGreen(), theme.panel_BG.getBlue(), 240));
+            g2.setColor(new Color(theme.panel_BG.getRed(), theme.panel_BG.getGreen(), theme.panel_BG.getBlue(), 245));
             g2.fillRoundRect(0, 0, WIDTH, HEIGHT, 10, 10);
 
             // Draw the title text

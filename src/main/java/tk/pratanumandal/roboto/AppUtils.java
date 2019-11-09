@@ -83,7 +83,6 @@ public class AppUtils {
 			  .text(message)
 			  .position(Pos.TOP_RIGHT)
 			  .hideAfter(3000)
-			  //.hideCloseButton()
 			  .darkStyle()
 			  .show();
 	}
