@@ -38,7 +38,7 @@ import dorkbox.notify.Theme;
 class NotifyCanvas extends Canvas {
     private static final Stroke stroke = new BasicStroke(2);
     private static final int closeX = 282;
-    private static final int closeY = 2;
+    private static final int closeY = 5;
 
     private static final int Y_1 = closeY + 6;
     private static final int X_1 = closeX - 2;
@@ -193,16 +193,16 @@ class NotifyCanvas extends Canvas {
             // Draw the title text
             g2.setColor(theme.titleText_FG);
             g2.setFont(theme.titleTextFont);
-            g2.drawString(title, 10, 25);
+            g2.drawString(title, 10, 26);
 
 
             int posX = 10;
-            int posY = 5;
+            int posY = -1;
             int textLengthLimit = 80;
 
             // ICON
             if (imageIcon != null) {
-                textLengthLimit = 88;
+                textLengthLimit = 70;
                 posX = 60;
                 // Draw the image
                 imageIcon.paintIcon(null, g2, 5, 30);

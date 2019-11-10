@@ -15,6 +15,9 @@
  */
 package dorkbox.notify;
 
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -61,6 +64,15 @@ import dorkbox.util.SwingUtil;
 @SuppressWarnings({"WeakerAccess", "unused", "UnusedReturnValue"})
 public final
 class Notify {
+	
+	static {
+		try {
+	   	     GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+	   	     ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, Notify.class.getClassLoader().getResourceAsStream("OpenSans-Regular.ttf")));
+	   	} catch (IOException | FontFormatException e) {
+	   	     //Handle exception
+	   	}
+	}
 
     public static final String DIALOG_CONFIRM = "dialog-confirm.png";
 
@@ -72,13 +84,13 @@ class Notify {
      * This is the title font used by a notification.
      */
     @Property
-    public static String TITLE_TEXT_FONT = "Source Code Pro BOLD 16";
+    public static String TITLE_TEXT_FONT = "Open Sans BOLD 16";
 
     /**
      * This is the main text font used by a notification.
      */
     @Property
-    public static String MAIN_TEXT_FONT = "Source Code Pro BOLD 12";
+    public static String MAIN_TEXT_FONT = "Open Sans BOLD 13";
 
     /**
      * How long we want it to take for the popups to relocate when one is closed
