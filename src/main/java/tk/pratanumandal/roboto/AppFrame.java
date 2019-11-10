@@ -80,6 +80,7 @@ public class AppFrame extends JFrame {
 	
 	private String currentMouseStop;
 	private String currentKeyboardStop;
+	private String currentShutdown;
 	private boolean shutdownWarning;
 	
 	public AppFrame() {
@@ -445,6 +446,11 @@ public class AppFrame extends JFrame {
 		
 		// handle shutdown scheduler
 		shutdownCombo.addActionListener((event) -> {
+			String item = (String) shutdownCombo.getSelectedItem();
+			if (item.equals(currentShutdown)) {
+				return;
+			}
+			
 			boolean flag = shutdownFuture != null && !shutdownFuture.isCancelled() && !shutdownFuture.isDone();
 			if (autoShutdown()) {
 				if (flag) {
@@ -669,6 +675,8 @@ public class AppFrame extends JFrame {
 	
 	public boolean autoShutdown() {
 		String item = (String) shutdownCombo.getSelectedItem();
+		currentShutdown = item;
+		
 		int time;
 		switch (item) {
 			default:
