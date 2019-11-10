@@ -235,7 +235,7 @@ class NotifyCanvas extends Canvas {
             mainTextLabel.setForeground(theme.mainText_FG);
             mainTextLabel.setFont(theme.mainTextFont);
             mainTextLabel.setText(text.toString());
-            mainTextLabel.setBounds(0, 0, WIDTH - posX - 2, HEIGHT);
+            mainTextLabel.setBounds(0, 0, WIDTH - 2 * posX + 1, HEIGHT);
 
             g2.translate(posX, posY);
             mainTextLabel.paint(g2);
