@@ -77,18 +77,21 @@ public class AppUtils {
 	    return true;
 	}
 	
-	public static void notify(String title, String message) {
-		notify(title, message, 3000);
+	public static Notify notify(String title, String message) {
+		return notify(title, message, 3000);
 	}
 	
-	public static void notify(String title, String message, int time) {
-		Notify.create()
-			  .title(title)
-			  .text(message)
-			  .position(Pos.TOP_RIGHT)
-			  .hideAfter(time)
-			  .darkStyle()
-			  .show();
+	public static Notify notify(String title, String message, int time) {
+		Notify notify = Notify.create()
+							  .title(title)
+							  .text(message)
+							  .position(Pos.TOP_RIGHT)
+							  .hideAfter(time)
+							  .darkStyle();
+		
+		notify.show();
+		
+		return notify;
 	}
 	
 }

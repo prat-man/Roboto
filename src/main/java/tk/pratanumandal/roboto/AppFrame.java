@@ -56,6 +56,8 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
+import dorkbox.notify.Notify;
+
 public class AppFrame extends JFrame {
 	
 	private static final long serialVersionUID = -1748889400784668366L;
@@ -77,6 +79,8 @@ public class AppFrame extends JFrame {
 	private JComboBox<String> keyboardStopCombo;
 	
 	private JComboBox<String> shutdownCombo;
+	
+	private Notify shutdownNotify;
 	
 	private String currentMouseStop;
 	private String currentKeyboardStop;
@@ -681,7 +685,7 @@ public class AppFrame extends JFrame {
 		switch (item) {
 			default:
 			case "Never":		time = 0; 		break;
-			case "15 minutes":	time = 15; 		break;
+			case "15 minutes":	time = 3; 		break;
 			case "30 minutes":	time = 30; 		break;
 			case "1 hour":		time = 60; 		break;
 			case "3 hours":		time = 3 * 60; 	break;
@@ -698,7 +702,7 @@ public class AppFrame extends JFrame {
 			shutdownFuture = exec.scheduleAtFixedRate(() -> {
 				if (shutdownWarning) {
 					shutdownWarning = false;
-					AppUtils.notify("Roboto", "System will shutdown in 2 minutes. Please save any unsaved work immediately.", 30000);
+					shutdownNotify = AppUtils.notify("Roboto", "System will shutdown in 2 minutes. Please save any unsaved work immediately.", 120000);
 				}
 				else {
 					try {
@@ -722,6 +726,9 @@ public class AppFrame extends JFrame {
 		shutdownFuture.cancel(true);
 		shutdownFuture = null;
 		shutdownWarning = true;
+		try {
+			shutdownNotify.close();
+		} catch (NullPointerException e) {}
 		return true;
 	}
 	

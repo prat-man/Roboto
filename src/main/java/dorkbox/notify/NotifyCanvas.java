@@ -37,7 +37,7 @@ import dorkbox.notify.Theme;
 @SuppressWarnings("FieldCanBeLocal")
 class NotifyCanvas extends Canvas {
     private static final Stroke stroke = new BasicStroke(2);
-    private static final int closeX = 282;
+    private static final int closeX = 289;
     private static final int closeY = 5;
 
     private static final int Y_1 = closeY + 6;
@@ -45,7 +45,7 @@ class NotifyCanvas extends Canvas {
     private static final int Y_2 = closeY + 14;
     private static final int X_2 = closeX + 6;
 
-    static final int WIDTH = 300;
+    static final int WIDTH = 307;
     static final int HEIGHT = 87;
     private static final int PROGRESS_HEIGHT = HEIGHT - 7;
 
