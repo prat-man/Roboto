@@ -19,7 +19,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import dorkbox.notify.INotify;
-import dorkbox.notify.NotifyCanvas;
+import dorkbox.notify.NotifyPanel;
 
 class ClickAdapter extends MouseAdapter {
 
@@ -29,7 +29,7 @@ class ClickAdapter extends MouseAdapter {
     @Override
     public
     void mouseReleased(final MouseEvent e) {
-        INotify parent = ((NotifyCanvas) e.getSource()).parent;
+        INotify parent = ((NotifyPanel) e.getSource()).parent;
         parent.onClick(e.getX(), e.getY());
     }
 }

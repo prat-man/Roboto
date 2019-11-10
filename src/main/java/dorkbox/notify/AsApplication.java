@@ -29,7 +29,7 @@ import javax.swing.JPanel;
 import dorkbox.notify.INotify;
 import dorkbox.notify.LookAndFeel;
 import dorkbox.notify.Notify;
-import dorkbox.notify.NotifyCanvas;
+import dorkbox.notify.NotifyPanel;
 import dorkbox.notify.Theme;
 import dorkbox.util.SwingUtil;
 
@@ -39,7 +39,7 @@ public
 class AsApplication implements INotify {
     private final LookAndFeel look;
     private final Notify notification;
-    private final NotifyCanvas notifyCanvas;
+    private final NotifyPanel notifyCanvas;
     private final JFrame appWindow;
 
     private final ComponentListener parentListener;
@@ -53,7 +53,7 @@ class AsApplication implements INotify {
     @SuppressWarnings("NumericCastThatLosesPrecision")
     AsApplication(final Notify notification, final ImageIcon image, final JFrame appWindow, final Theme theme) {
         this.notification = notification;
-        this.notifyCanvas = new NotifyCanvas(this, notification, image, theme, null);
+        this.notifyCanvas = new NotifyPanel(this, notification, image, theme, null);
         this.appWindow = appWindow;
 
         look = new LookAndFeel(this, appWindow, notifyCanvas, notification, appWindow.getBounds(), false);
@@ -167,7 +167,7 @@ class AsApplication implements INotify {
                 boolean found = false;
                 Component[] components = glassPane.getComponents();
                 for (Component component : components) {
-                    if (component instanceof NotifyCanvas) {
+                    if (component instanceof NotifyPanel) {
                         found = true;
                         break;
                     }

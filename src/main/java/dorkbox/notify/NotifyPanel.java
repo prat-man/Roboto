@@ -16,7 +16,6 @@
 package dorkbox.notify;
 
 import java.awt.BasicStroke;
-import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -28,6 +27,7 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JWindow;
 
 import dorkbox.notify.INotify;
@@ -35,7 +35,7 @@ import dorkbox.notify.Notify;
 import dorkbox.notify.Theme;
 
 @SuppressWarnings("FieldCanBeLocal")
-class NotifyCanvas extends Canvas {
+class NotifyPanel extends JPanel {
     private static final Stroke stroke = new BasicStroke(2);
     private static final int closeX = 289;
     private static final int closeY = 5;
@@ -63,7 +63,7 @@ class NotifyCanvas extends Canvas {
     final JWindow parentWindow;
 
 
-    NotifyCanvas(final INotify parent, final Notify notification, final ImageIcon imageIcon, final Theme theme, final JWindow parentWindow) {
+    NotifyPanel(final INotify parent, final Notify notification, final ImageIcon imageIcon, final Theme theme, final JWindow parentWindow) {
         this.parent = parent;
         this.notification = notification;
         this.imageIcon = imageIcon;

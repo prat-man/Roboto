@@ -29,7 +29,7 @@ import dorkbox.notify.INotify;
 import dorkbox.notify.LookAndFeel;
 import dorkbox.notify.Notify;
 import dorkbox.notify.NotifyAccessor;
-import dorkbox.notify.NotifyCanvas;
+import dorkbox.notify.NotifyPanel;
 import dorkbox.notify.PopupList;
 import dorkbox.notify.Pos;
 import dorkbox.notify.WindowAdapter;
@@ -85,7 +85,7 @@ class LookAndFeel {
 
     private final INotify notify;
     private final Window parent;
-    private final NotifyCanvas notifyCanvas;
+    private final NotifyPanel notifyCanvas;
 
     private final float hideAfterDurationInSeconds;
     private final Pos position;
@@ -100,7 +100,7 @@ class LookAndFeel {
     private final ActionHandler<Notify> onGeneralAreaClickAction;
 
     LookAndFeel(final INotify notify, final Window parent,
-                final NotifyCanvas notifyCanvas,
+                final NotifyPanel notifyCanvas,
                 final Notify notification,
                 final Rectangle parentBounds,
                 final boolean isDesktopNotification) {
@@ -183,10 +183,10 @@ class LookAndFeel {
                 PopupList looks = popups.get(id);
                 if (looks != null) {
                     if (showFromTop) {
-                        changedY = anchorY + (popupIndex * (NotifyCanvas.HEIGHT + SPACER));
+                        changedY = anchorY + (popupIndex * (NotifyPanel.HEIGHT + SPACER));
                     }
                     else {
-                        changedY = anchorY - (popupIndex * (NotifyCanvas.HEIGHT + SPACER));
+                        changedY = anchorY - (popupIndex * (NotifyPanel.HEIGHT + SPACER));
                     }
                 }
                 else {
@@ -309,11 +309,11 @@ class LookAndFeel {
                 return MARGIN + startX;
 
             case CENTER:
-                return startX + (screenWidth / 2) - NotifyCanvas.WIDTH / 2 - MARGIN / 2;
+                return startX + (screenWidth / 2) - NotifyPanel.WIDTH / 2 - MARGIN / 2;
 
             case TOP_RIGHT:
             case BOTTOM_RIGHT:
-                return startX + screenWidth - NotifyCanvas.WIDTH - MARGIN;
+                return startX + screenWidth - NotifyPanel.WIDTH - MARGIN;
 
             default:
                 throw new RuntimeException("Unknown position. '" + position + "'");
@@ -338,14 +338,14 @@ class LookAndFeel {
                 return startY + MARGIN;
 
             case CENTER:
-                return startY + (screenHeight / 2) - NotifyCanvas.HEIGHT / 2 - MARGIN / 2 - SPACER;
+                return startY + (screenHeight / 2) - NotifyPanel.HEIGHT / 2 - MARGIN / 2 - SPACER;
 
             case BOTTOM_LEFT:
             case BOTTOM_RIGHT:
                 if (isDesktop) {
-                    return startY + screenHeight - NotifyCanvas.HEIGHT - MARGIN;
+                    return startY + screenHeight - NotifyPanel.HEIGHT - MARGIN;
                 } else {
-                    return startY + screenHeight - NotifyCanvas.HEIGHT - MARGIN - SPACER * 2;
+                    return startY + screenHeight - NotifyPanel.HEIGHT - MARGIN - SPACER * 2;
                 }
 
             default:
@@ -385,10 +385,10 @@ class LookAndFeel {
                 }
 
                 if (showFromTop) {
-                    targetY = anchorY + (index * (NotifyCanvas.HEIGHT + SPACER)) + looks.getOffsetY();
+                    targetY = anchorY + (index * (NotifyPanel.HEIGHT + SPACER)) + looks.getOffsetY();
                 }
                 else {
-                    targetY = anchorY - (index * (NotifyCanvas.HEIGHT + SPACER)) + looks.getOffsetY();
+                    targetY = anchorY - (index * (NotifyPanel.HEIGHT + SPACER)) + looks.getOffsetY();
                 }
 
             }
@@ -399,7 +399,7 @@ class LookAndFeel {
             if (sourceLook.hideAfterDurationInSeconds > 0 && sourceLook.hideTween == null) {
                 // begin a timeline to get rid of the popup (default is 5 seconds)
                 animation.to(sourceLook, NotifyAccessor.PROGRESS, accessor, sourceLook.hideAfterDurationInSeconds)
-                         .target(NotifyCanvas.WIDTH)
+                         .target(NotifyPanel.WIDTH)
                          .ease(TweenEquations.Linear)
                          .addCallback(new TweenCallback() {
                             @Override
@@ -460,10 +460,10 @@ class LookAndFeel {
                 int changedY;
 
                 if (showFromTop) {
-                    changedY = look.anchorY + (look.popupIndex * (NotifyCanvas.HEIGHT + SPACER) + offsetY);
+                    changedY = look.anchorY + (look.popupIndex * (NotifyPanel.HEIGHT + SPACER) + offsetY);
                 }
                 else {
-                    changedY = look.anchorY - (look.popupIndex * (NotifyCanvas.HEIGHT + SPACER) + offsetY);
+                    changedY = look.anchorY - (look.popupIndex * (NotifyPanel.HEIGHT + SPACER) + offsetY);
                 }
 
                 // now animate that popup to it's new location
