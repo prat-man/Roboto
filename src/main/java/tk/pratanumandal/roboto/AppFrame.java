@@ -80,6 +80,7 @@ public class AppFrame extends JFrame {
 	
 	private String currentMouseStop;
 	private String currentKeyboardStop;
+	private boolean shutdownWarning;
 	
 	public AppFrame() {
 		// call super constructor and set frame title
@@ -444,7 +445,21 @@ public class AppFrame extends JFrame {
 		
 		// handle shutdown scheduler
 		shutdownCombo.addActionListener((event) -> {
-			autoShutdown();
+			boolean flag = shutdownFuture != null && !shutdownFuture.isCancelled() && !shutdownFuture.isDone();
+			if (autoShutdown()) {
+				if (flag) {
+					System.out.println("Automatic Shutdown Changed");
+					AppUtils.notify("Roboto", "Automatic Shutdown Changed");
+				}
+				else {
+					System.out.println("Automatic Shutdown Scheduled");
+					AppUtils.notify("Roboto", "Automatic Shutdown Scheduled");
+				}
+			}
+			else {
+				System.out.println("Automatic Shutdown Cancelled");
+				AppUtils.notify("Roboto", "Automatic Shutdown Cancelled");
+			}
 		});
 		
 		// information label action
@@ -504,6 +519,7 @@ public class AppFrame extends JFrame {
 		}
 		mouseFuture.cancel(true);
 		mouseFuture = null;
+		currentMouseStop = null;
 		return true;
 	}
 	
@@ -523,14 +539,9 @@ public class AppFrame extends JFrame {
 				case "5 hours":		time = 5 * 60; 	break;
 			}
 			
-			if (time == 0) {
-				if (mouseStopFuture != null && !mouseStopFuture.isCancelled() && !mouseStopFuture.isDone()) {
-					mouseStopFuture.cancel(true);
-					mouseStopFuture = null;
-					return false;
-				}
-			}
-			else {
+			cancelAutoStopMouse();
+			
+			if (time != 0) {
 				// start scheduler to stop movements after specified time
 				ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
 				mouseStopFuture = exec.schedule(() -> {
@@ -606,6 +617,7 @@ public class AppFrame extends JFrame {
 		}
 		keyboardFuture.cancel(true);
 		keyboardFuture = null;
+		currentKeyboardStop = null;
 		return true;
 	}
 	
@@ -625,14 +637,9 @@ public class AppFrame extends JFrame {
 				case "5 hours":		time = 5 * 60; 	break;
 			}
 			
-			if (time == 0) {
-				if (keyboardStopFuture != null && !keyboardStopFuture.isCancelled() && !keyboardStopFuture.isDone()) {
-					keyboardStopFuture.cancel(true);
-					keyboardStopFuture = null;
-					return false;
-				}
-			}
-			else {
+			cancelAutoStopKeyboard();
+			
+			if (time != 0) {
 				// start scheduler to stop movements after specified time
 				ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
 				keyboardStopFuture = exec.schedule(() -> {
@@ -660,7 +667,7 @@ public class AppFrame extends JFrame {
 		return true;
 	}
 	
-	public void autoShutdown() {
+	public boolean autoShutdown() {
 		String item = (String) shutdownCombo.getSelectedItem();
 		int time;
 		switch (item) {
@@ -672,26 +679,42 @@ public class AppFrame extends JFrame {
 			case "3 hours":		time = 3 * 60; 	break;
 			case "5 hours":		time = 5 * 60; 	break;
 		}
-		if (time == 0) {
-			if (shutdownFuture != null && !shutdownFuture.isCancelled() && !shutdownFuture.isDone()) {
-				shutdownFuture.cancel(true);
-				shutdownFuture = null;
-				AppUtils.notify("Roboto", "Automatic Shutdown Cancelled");
-			}
-		}
-		else {
+		
+		cancelAutoShutdown();
+		
+		if (time != 0)  {
+			shutdownWarning = true;
 			// start scheduler to stop movements after specified time
+			// allow 2 minutes of wait time
 			ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
-			shutdownFuture = exec.schedule(() -> {
-				try {
-					// allow 2 minutes of wait time
-					AppUtils.shutdown(120);
-				} catch (IOException e1) {
-					e1.printStackTrace();
+			shutdownFuture = exec.scheduleAtFixedRate(() -> {
+				if (shutdownWarning) {
+					shutdownWarning = false;
+					AppUtils.notify("Roboto", "System will shutdown in 2 minutes. Please save any unsaved work immediately.", 30000);
 				}
-			}, time, TimeUnit.MINUTES);
-			AppUtils.notify("Roboto", "Automatic Shutdown Scheduled");
+				else {
+					try {
+						shutdownFuture.cancel(false);
+						AppUtils.shutdown(0);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				}
+			}, time - 2, 2, TimeUnit.MINUTES);
+			return true;
 		}
+		
+		return false;
+	}
+	
+	public boolean cancelAutoShutdown() {
+		if (shutdownFuture == null || shutdownFuture.isCancelled() || shutdownFuture.isDone()) {
+			return false;
+		}
+		shutdownFuture.cancel(true);
+		shutdownFuture = null;
+		shutdownWarning = true;
+		return true;
 	}
 	
 }

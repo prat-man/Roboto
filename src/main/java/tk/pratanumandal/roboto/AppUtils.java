@@ -78,11 +78,15 @@ public class AppUtils {
 	}
 	
 	public static void notify(String title, String message) {
+		notify(title, message, 3000);
+	}
+	
+	public static void notify(String title, String message, int time) {
 		Notify.create()
 			  .title(title)
 			  .text(message)
 			  .position(Pos.TOP_RIGHT)
-			  .hideAfter(3000)
+			  .hideAfter(time)
 			  .darkStyle()
 			  .show();
 	}
