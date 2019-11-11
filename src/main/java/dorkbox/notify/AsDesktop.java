@@ -29,7 +29,7 @@ import javax.swing.JWindow;
 import dorkbox.notify.INotify;
 import dorkbox.notify.LookAndFeel;
 import dorkbox.notify.Notify;
-import dorkbox.notify.NotifyPanel;
+import dorkbox.notify.NotifyCanvas;
 import dorkbox.notify.Theme;
 import dorkbox.util.ScreenUtil;
 import dorkbox.util.SwingUtil;
@@ -49,8 +49,6 @@ class AsDesktop extends JWindow implements INotify {
     @SuppressWarnings("NumericCastThatLosesPrecision")
     AsDesktop(final Notify notification, final ImageIcon image, final Theme theme) {
         this.notification = notification;
-        
-        setBackground(new Color(0, 0, 0, 0));
 
         setAlwaysOnTop(true);
 
@@ -58,7 +56,7 @@ class AsDesktop extends JWindow implements INotify {
         setPreferredSize(preferredSize);
         setMaximumSize(preferredSize);
         setMinimumSize(preferredSize);
-        setSize(NotifyPanel.WIDTH, NotifyPanel.HEIGHT);
+        setSize(NotifyCanvas.WIDTH, NotifyCanvas.HEIGHT);
         setLocation(Short.MIN_VALUE, Short.MIN_VALUE);
 
         Rectangle bounds;
@@ -91,7 +89,7 @@ class AsDesktop extends JWindow implements INotify {
                        .getBounds();
 
 
-        NotifyPanel notifyCanvas = new NotifyPanel(this, notification, image, theme, this);
+        NotifyCanvas notifyCanvas = new NotifyCanvas(this, notification, image, theme);
         getContentPane().add(notifyCanvas);
 
         look = new LookAndFeel(this, this, notifyCanvas, notification, bounds, true);

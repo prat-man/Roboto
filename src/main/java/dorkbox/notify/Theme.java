@@ -44,7 +44,7 @@ class Theme {
             titleText_FG = Color.GRAY;
             mainText_FG = Color.LIGHT_GRAY;
             closeX_FG = Color.GRAY;
-            progress_FG = Color.GRAY;
+            progress_FG = new Color(0x42A5F5);
         }
         else {
             panel_BG = Color.WHITE;

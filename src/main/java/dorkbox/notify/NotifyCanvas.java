@@ -16,6 +16,7 @@
 package dorkbox.notify;
 
 import java.awt.BasicStroke;
+import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -35,7 +36,7 @@ import dorkbox.notify.Notify;
 import dorkbox.notify.Theme;
 
 @SuppressWarnings("FieldCanBeLocal")
-class NotifyPanel extends JPanel {
+class NotifyCanvas extends Canvas {
     private static final Stroke stroke = new BasicStroke(2);
     private static final int closeX = 289;
     private static final int closeY = 5;
@@ -47,7 +48,7 @@ class NotifyPanel extends JPanel {
 
     static final int WIDTH = 307;
     static final int HEIGHT = 87;
-    private static final int PROGRESS_HEIGHT = HEIGHT - 7;
+    private static final int PROGRESS_HEIGHT = HEIGHT - 2;
 
     private final boolean showCloseButton;
     private BufferedImage cachedImage;
@@ -60,17 +61,13 @@ class NotifyPanel extends JPanel {
 
     private final Theme theme;
     final INotify parent;
-    final JWindow parentWindow;
 
 
-    NotifyPanel(final INotify parent, final Notify notification, final ImageIcon imageIcon, final Theme theme, final JWindow parentWindow) {
+    NotifyCanvas(final INotify parent, final Notify notification, final ImageIcon imageIcon, final Theme theme) {
         this.parent = parent;
         this.notification = notification;
         this.imageIcon = imageIcon;
         this.theme = theme;
-        this.parentWindow = parentWindow;
-        
-        setBackground(new Color(0, 0, 0, 0));
 
         final Dimension preferredSize = new Dimension(WIDTH, HEIGHT);
         setPreferredSize(preferredSize);
@@ -99,8 +96,6 @@ class NotifyPanel extends JPanel {
     public
     void paint(final Graphics g) {
         // we cache the text + image (to another image), and then always render the close + progressbar
-
-    	g.clearRect(0, 0, WIDTH, HEIGHT);
     	
         // use our cached image, so we don't have to re-render text/background/etc
         try {
@@ -157,9 +152,6 @@ class NotifyPanel extends JPanel {
             g2.fillRect(0, PROGRESS_HEIGHT, progress, 2);
         } finally {
             g2.dispose();
-            if (parentWindow != null) {
-            	//parentWindow.repaint();
-            }
         }
     }
 
@@ -189,8 +181,8 @@ class NotifyPanel extends JPanel {
         g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
         try {
-            g2.setColor(new Color(theme.panel_BG.getRed(), theme.panel_BG.getGreen(), theme.panel_BG.getBlue(), 245));
-            g2.fillRoundRect(0, 0, WIDTH, HEIGHT, 10, 10);
+            g2.setColor(new Color(theme.panel_BG.getRed(), theme.panel_BG.getGreen(), theme.panel_BG.getBlue()));
+            g2.fillRect(0, 0, WIDTH, HEIGHT);
 
             // Draw the title text
             g2.setColor(theme.titleText_FG);
@@ -199,7 +191,7 @@ class NotifyPanel extends JPanel {
 
 
             int posX = 10;
-            int posY = -1;
+            int posY = 2;
             int textLengthLimit = 80;
 
             // ICON

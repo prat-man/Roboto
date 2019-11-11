@@ -33,6 +33,8 @@ public class App {
 			e.printStackTrace();
 		}
 		
+		AppUtils.notify("Roboto", "System will shutdown in 2 minutes. Please save any unsaved work immediately.", 20000);
+		
 		AppFrame frame = new AppFrame();
 		
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
