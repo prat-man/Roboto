@@ -100,6 +100,8 @@ class NotifyPanel extends JPanel {
     void paint(final Graphics g) {
         // we cache the text + image (to another image), and then always render the close + progressbar
 
+    	g.clearRect(0, 0, WIDTH, HEIGHT);
+    	
         // use our cached image, so we don't have to re-render text/background/etc
         try {
             g.drawImage(cachedImage, 0, 0, null);
@@ -156,7 +158,7 @@ class NotifyPanel extends JPanel {
         } finally {
             g2.dispose();
             if (parentWindow != null) {
-            	parentWindow.repaint();
+            	//parentWindow.repaint();
             }
         }
     }
