@@ -179,9 +179,9 @@ class Notify {
             }
 
             if (image == null) {
-                String name = IMAGE_PATH + File.separatorChar + imageName;
+                //String name = IMAGE_PATH + File.separatorChar + imageName;
 
-                resourceAsStream = LocationResolver.getResourceAsStream(name);
+                resourceAsStream = LocationResolver.getResourceAsStream(imageName);
 
                 image = new ImageIcon(ImageUtil.getImageImmediate(ImageIO.read(resourceAsStream)));
                 imageCache.put(imageName, new SoftReference<ImageIcon>(image));

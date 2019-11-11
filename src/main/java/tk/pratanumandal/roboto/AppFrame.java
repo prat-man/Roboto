@@ -57,6 +57,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
 import dorkbox.notify.Notify;
+import tk.pratanumandal.roboto.AppUtils.Notification;
 
 public class AppFrame extends JFrame {
 	
@@ -80,7 +81,8 @@ public class AppFrame extends JFrame {
 	
 	private JComboBox<String> shutdownCombo;
 	
-	private Notify shutdownNotify;
+	private Notify shutdownNotify1;
+	private Notify shutdownNotify2;
 	
 	private String currentMouseStop;
 	private String currentKeyboardStop;
@@ -332,7 +334,7 @@ public class AppFrame extends JFrame {
 			
 			if (startMouse(value)) {
 				System.out.println("Mouse Scheduler Started");
-				AppUtils.notify("Roboto", "Mouse Scheduler Started");
+				AppUtils.notify("Roboto", "Mouse Scheduler Started", Notification.INFORMATION);
 				
 				if (autoStopMouse()) {
 					System.out.println("Mouse Automatic Stop Started");
@@ -349,7 +351,7 @@ public class AppFrame extends JFrame {
 		mouseStopButton.addActionListener((event) -> {
 			if (stopMouse()) {
 				System.out.println("Mouse Scheduler Stopped");
-				AppUtils.notify("Roboto", "Mouse Scheduler Stopped");
+				AppUtils.notify("Roboto", "Mouse Scheduler Stopped", Notification.INFORMATION);
 				
 				if (cancelAutoStopMouse()) {
 					System.out.println("Mouse Automatic Stop Cancelled");
@@ -378,10 +380,10 @@ public class AppFrame extends JFrame {
 			
 			if (autoStopMouse()) {
 				System.out.println("Mouse Automatic Stop Changed");
-				AppUtils.notify("Roboto", "Mouse Automatic Stop Changed");
+				AppUtils.notify("Roboto", "Mouse Automatic Stop Changed", Notification.INFORMATION);
 			} else if (mouseFuture != null && !mouseFuture.isCancelled() && !mouseFuture.isDone()) {
 				System.out.println("Mouse Automatic Stop Cancelled");
-				AppUtils.notify("Roboto", "Mouse Automatic Stop Cancelled");
+				AppUtils.notify("Roboto", "Mouse Automatic Stop Cancelled", Notification.INFORMATION);
 			} else {
 				System.out.println("Mouse Automatic Stop Changed");
 			}
@@ -393,7 +395,7 @@ public class AppFrame extends JFrame {
 			
 			if (startKeyboard(value)) {
 				System.out.println("Keyboard Scheduler Started");
-				AppUtils.notify("Roboto", "Keyboard Scheduler Started");
+				AppUtils.notify("Roboto", "Keyboard Scheduler Started", Notification.INFORMATION);
 				
 				if (autoStopKeyboard()) {
 					System.out.println("Keyboard Automatic Stop Started");
@@ -410,7 +412,7 @@ public class AppFrame extends JFrame {
 		keyboardStopButton.addActionListener((event) -> {
 			if (stopKeyboard()) {
 				System.out.println("Keyboard Scheduler Stopped");
-				AppUtils.notify("Roboto", "Keyboard Scheduler Stopped");
+				AppUtils.notify("Roboto", "Keyboard Scheduler Stopped", Notification.INFORMATION);
 				
 				if (cancelAutoStopKeyboard()) {
 					System.out.println("Keyboard Automatic Stop Cancelled");
@@ -439,10 +441,10 @@ public class AppFrame extends JFrame {
 			
 			if (autoStopKeyboard()) {
 				System.out.println("Keyboard Automatic Stop Changed");
-				AppUtils.notify("Roboto", "Keyboard Automatic Stop Changed");
+				AppUtils.notify("Roboto", "Keyboard Automatic Stop Changed", Notification.INFORMATION);
 			} else if (keyboardFuture != null && !keyboardFuture.isCancelled() && !keyboardFuture.isDone()) {
 				System.out.println("Keyboard Automatic Stop Cancelled");
-				AppUtils.notify("Roboto", "Keyboard Automatic Stop Cancelled");
+				AppUtils.notify("Roboto", "Keyboard Automatic Stop Cancelled", Notification.INFORMATION);
 			} else {
 				System.out.println("Keyboard Automatic Stop Changed");
 			}
@@ -459,16 +461,16 @@ public class AppFrame extends JFrame {
 			if (autoShutdown()) {
 				if (flag) {
 					System.out.println("Automatic Shutdown Changed");
-					AppUtils.notify("Roboto", "Automatic Shutdown Changed");
+					AppUtils.notify("Roboto", "Automatic Shutdown Changed", Notification.INFORMATION);
 				}
 				else {
 					System.out.println("Automatic Shutdown Scheduled");
-					AppUtils.notify("Roboto", "Automatic Shutdown Scheduled");
+					AppUtils.notify("Roboto", "Automatic Shutdown Scheduled", Notification.INFORMATION);
 				}
 			}
 			else {
 				System.out.println("Automatic Shutdown Cancelled");
-				AppUtils.notify("Roboto", "Automatic Shutdown Cancelled");
+				AppUtils.notify("Roboto", "Automatic Shutdown Cancelled", Notification.INFORMATION);
 			}
 		});
 		
@@ -557,7 +559,7 @@ public class AppFrame extends JFrame {
 				mouseStopFuture = exec.schedule(() -> {
 					if (stopMouse()) {
 						System.out.println("Mouse Scheduler Stopped");
-						AppUtils.notify("Roboto", "Mouse Scheduler Stopped");
+						AppUtils.notify("Roboto", "Mouse Scheduler Stopped", Notification.INFORMATION);
 						
 						mouseStartButton.setEnabled(true);
 						mouseStopButton.setEnabled(false);
@@ -655,7 +657,7 @@ public class AppFrame extends JFrame {
 				keyboardStopFuture = exec.schedule(() -> {
 					if (stopKeyboard()) {
 						System.out.println("Keyboard Scheduler Stopped");
-						AppUtils.notify("Roboto", "Keyboard Scheduler Stopped");
+						AppUtils.notify("Roboto", "Keyboard Scheduler Stopped", Notification.INFORMATION);
 						
 						keyboardStartButton.setEnabled(true);
 						keyboardStopButton.setEnabled(false);
@@ -702,7 +704,8 @@ public class AppFrame extends JFrame {
 			shutdownFuture = exec.scheduleAtFixedRate(() -> {
 				if (shutdownWarning) {
 					shutdownWarning = false;
-					shutdownNotify = AppUtils.notify("Roboto", "System will shutdown in 2 minutes. Please save any unsaved work immediately.", 120000);
+					shutdownNotify1 = AppUtils.notify("Roboto", "System will shutdown in 2 minutes.", 120000, Notification.WARNING);
+					shutdownNotify2 = AppUtils.notify("Roboto", "Please save any unsaved work immediately.", 30000, Notification.WARNING);
 				}
 				else {
 					try {
@@ -727,7 +730,10 @@ public class AppFrame extends JFrame {
 		shutdownFuture = null;
 		shutdownWarning = true;
 		try {
-			shutdownNotify.close();
+			shutdownNotify1.close();
+		} catch (NullPointerException e) {}
+		try {
+			shutdownNotify2.close();
 		} catch (NullPointerException e) {}
 		return true;
 	}

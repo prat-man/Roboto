@@ -41,7 +41,7 @@ class Theme {
 
         if (isDarkTheme) {
             panel_BG = Color.DARK_GRAY;
-            titleText_FG = Color.GRAY;
+            titleText_FG = new Color(240, 240, 240);
             mainText_FG = Color.LIGHT_GRAY;
             closeX_FG = Color.GRAY;
             progress_FG = new Color(0x42A5F5);

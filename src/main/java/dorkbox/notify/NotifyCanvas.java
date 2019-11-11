@@ -28,8 +28,6 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JWindow;
 
 import dorkbox.notify.INotify;
 import dorkbox.notify.Notify;
@@ -38,7 +36,7 @@ import dorkbox.notify.Theme;
 @SuppressWarnings("FieldCanBeLocal")
 class NotifyCanvas extends Canvas {
     private static final Stroke stroke = new BasicStroke(2);
-    private static final int closeX = 289;
+    private static final int closeX = 282;
     private static final int closeY = 5;
 
     private static final int Y_1 = closeY + 6;
@@ -46,7 +44,7 @@ class NotifyCanvas extends Canvas {
     private static final int Y_2 = closeY + 14;
     private static final int X_2 = closeX + 6;
 
-    static final int WIDTH = 307;
+    static final int WIDTH = 300;
     static final int HEIGHT = 87;
     private static final int PROGRESS_HEIGHT = HEIGHT - 2;
 
@@ -192,14 +190,14 @@ class NotifyCanvas extends Canvas {
 
             int posX = 10;
             int posY = 2;
-            int textLengthLimit = 80;
+            int textLengthLimit = 70;
 
             // ICON
             if (imageIcon != null) {
-                textLengthLimit = 70;
+                textLengthLimit = 50;
                 posX = 60;
                 // Draw the image
-                imageIcon.paintIcon(null, g2, 5, 30);
+                imageIcon.paintIcon(null, g2, 15, 39);
             }
 
             // Draw the main text

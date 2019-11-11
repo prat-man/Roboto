@@ -78,10 +78,18 @@ public class AppUtils {
 	}
 	
 	public static Notify notify(String title, String message) {
-		return notify(title, message, 3000);
+		return notify(title, message, 3000, Notification.NONE);
+	}
+	
+	public static Notify notify(String title, String message, Notification notification) {
+		return notify(title, message, 3000, notification);
 	}
 	
 	public static Notify notify(String title, String message, int time) {
+		return notify(title, message, time, Notification.NONE);
+	}
+	
+	public static Notify notify(String title, String message, int time, Notification notification) {
 		Notify notify = Notify.create()
 							  .title(title)
 							  .text(message)
@@ -89,9 +97,27 @@ public class AppUtils {
 							  .hideAfter(time)
 							  .darkStyle();
 		
-		notify.show();
+		if (notification == Notification.NONE) {
+			notify.show();
+		}
+		else if (notification == Notification.INFORMATION) {
+			notify.showInformation();
+		}
+		else if (notification == Notification.QUESTION) {
+			notify.showConfirm();
+		}
+		else if (notification == Notification.WARNING) {
+			notify.showWarning();
+		}
+		else if (notification == Notification.ERROR) {
+			notify.showError();
+		}
 		
 		return notify;
+	}
+	
+	public static enum Notification {
+		NONE, INFORMATION, QUESTION, WARNING, ERROR
 	}
 	
 }
