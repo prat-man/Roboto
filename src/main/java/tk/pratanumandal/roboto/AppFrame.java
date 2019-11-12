@@ -96,7 +96,7 @@ public class AppFrame extends JFrame {
 		
 		// set frame icon
 		try {
-			String imagePath = "robot.png";
+			String imagePath = "images/robot.png";
 			InputStream imgStream = this.getClass().getClassLoader().getResourceAsStream(imagePath);
 			BufferedImage image = ImageIO.read(imgStream);
 			this.setIconImage(image);

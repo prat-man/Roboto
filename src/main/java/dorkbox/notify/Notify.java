@@ -68,7 +68,7 @@ class Notify {
 	static {
 		try {
 	   	     GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-	   	     ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, Notify.class.getClassLoader().getResourceAsStream("OpenSans-Semibold.ttf")));
+	   	     ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, Notify.class.getClassLoader().getResourceAsStream("fonts/OpenSans-Semibold.ttf")));
 	   	} catch (IOException | FontFormatException e) {
 	   	     //Handle exception
 	   	}
@@ -102,7 +102,7 @@ class Notify {
      * Location of the dialog image resources. By default they must be in the 'resources' directory relative to the application
      */
     @Property
-    public static String IMAGE_PATH = "resources";
+    public static String IMAGE_PATH = "images";
 
     private static Map<String, SoftReference<ImageIcon>> imageCache = new HashMap<String, SoftReference<ImageIcon>>(4);
 
@@ -179,9 +179,9 @@ class Notify {
             }
 
             if (image == null) {
-                //String name = IMAGE_PATH + File.separatorChar + imageName;
+                String name = IMAGE_PATH + File.separatorChar + imageName;
 
-                resourceAsStream = LocationResolver.getResourceAsStream(imageName);
+                resourceAsStream = LocationResolver.getResourceAsStream(name);
 
                 image = new ImageIcon(ImageUtil.getImageImmediate(ImageIO.read(resourceAsStream)));
                 imageCache.put(imageName, new SoftReference<ImageIcon>(image));
