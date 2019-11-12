@@ -687,7 +687,7 @@ public class AppFrame extends JFrame {
 		switch (item) {
 			default:
 			case "Never":		time = 0; 		break;
-			case "15 minutes":	time = 3; 		break;
+			case "15 minutes":	time = 15; 		break;
 			case "30 minutes":	time = 30; 		break;
 			case "1 hour":		time = 60; 		break;
 			case "3 hours":		time = 3 * 60; 	break;
