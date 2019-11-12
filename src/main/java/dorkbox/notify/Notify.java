@@ -68,7 +68,7 @@ class Notify {
 	static {
 		try {
 	   	     GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-	   	     ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, Notify.class.getClassLoader().getResourceAsStream("OpenSans-Regular.ttf")));
+	   	     ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, Notify.class.getClassLoader().getResourceAsStream("OpenSans-Semibold.ttf")));
 	   	} catch (IOException | FontFormatException e) {
 	   	     //Handle exception
 	   	}
@@ -84,13 +84,13 @@ class Notify {
      * This is the title font used by a notification.
      */
     @Property
-    public static String TITLE_TEXT_FONT = "Open Sans BOLD 16";
+    public static String TITLE_TEXT_FONT = "Open Sans Semibold PLAIN 16";
 
     /**
      * This is the main text font used by a notification.
      */
     @Property
-    public static String MAIN_TEXT_FONT = "Open Sans BOLD 13";
+    public static String MAIN_TEXT_FONT = "Open Sans Semibold PLAIN 13";
 
     /**
      * How long we want it to take for the popups to relocate when one is closed
