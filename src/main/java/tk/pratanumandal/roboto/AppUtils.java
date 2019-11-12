@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Random;
 
+import javax.swing.SwingUtilities;
+
 import org.apache.commons.lang3.SystemUtils;
 
 import dorkbox.notify.Pos;
@@ -97,21 +99,26 @@ public class AppUtils {
 							  .hideAfter(time)
 							  .darkStyle();
 		
-		if (notification == Notification.NONE) {
-			notify.show();
-		}
-		else if (notification == Notification.INFORMATION) {
-			notify.showInformation();
-		}
-		else if (notification == Notification.QUESTION) {
-			notify.showConfirm();
-		}
-		else if (notification == Notification.WARNING) {
-			notify.showWarning();
-		}
-		else if (notification == Notification.ERROR) {
-			notify.showError();
-		}
+		SwingUtilities.invokeLater(new Runnable() {
+	        @Override
+	        public void run() {
+				if (notification == Notification.NONE) {
+					notify.show();
+				}
+				else if (notification == Notification.INFORMATION) {
+					notify.showInformation();
+				}
+				else if (notification == Notification.QUESTION) {
+					notify.showConfirm();
+				}
+				else if (notification == Notification.WARNING) {
+					notify.showWarning();
+				}
+				else if (notification == Notification.ERROR) {
+					notify.showError();
+				}
+	        }
+	    });
 		
 		return notify;
 	}
