@@ -66,7 +66,7 @@ public class App {
 				JOptionPane.showMessageDialog(null, "Another instance is already running!", "Roboto", JOptionPane.ERROR_MESSAGE);
 				// send timestamp as message
 				Timestamp ts = new Timestamp(new Date().getTime());
-				return ts.toString();
+				return "Another instance launched at: " + ts.toString();
 			}
 		};
 		
