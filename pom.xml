@@ -56,6 +56,9 @@
 						<manifest>
 							<mainClass>tk.pratanumandal.roboto.App</mainClass>
 						</manifest>
+						<manifestEntries>
+							<SplashScreen-Image>images/robot.png</SplashScreen-Image>
+						</manifestEntries>
 					</archive>
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
