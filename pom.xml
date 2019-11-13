@@ -57,7 +57,7 @@
 							<mainClass>tk.pratanumandal.roboto.App</mainClass>
 						</manifest>
 						<manifestEntries>
-							<SplashScreen-Image>images/robot.png</SplashScreen-Image>
+							<SplashScreen-Image>images/robot.gif</SplashScreen-Image>
 						</manifestEntries>
 					</archive>
 					<descriptorRefs>
