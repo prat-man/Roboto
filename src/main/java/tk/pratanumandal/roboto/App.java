@@ -55,6 +55,7 @@ public class App {
 				// print received message (timestamp)
 				System.out.println(message);
 				// bring first instance to front
+				frame.setState(JFrame.ICONIFIED);
 				frame.setState(JFrame.NORMAL);
 				frame.toFront();
 				frame.requestFocus();
