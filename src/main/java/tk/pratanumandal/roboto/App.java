@@ -24,15 +24,22 @@ import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import dorkbox.notify.Notify;
+
 public class App {
 	
 	public static void main(String[] args) {
+		// use system look and feel
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
 			e.printStackTrace();
 		}
 		
+		// pre-initialize the notification framework
+		Notify.create();
+		
+		// create and display the frame
 		AppFrame frame = new AppFrame();
 		
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
