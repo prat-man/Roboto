@@ -247,12 +247,16 @@ public abstract class Unique {
 	// free the lock if possible
 	public void free() {
 		try {
+			// close server socket
 			if (server != null) {
 				server.close();
 			}
 			
+			// lock file path
 			String filePath = TEMP_DIR + "/" + APP_ID + ".lock";
 			File file = new File(filePath);
+			
+			// try to delete lock file
 			if (file.exists()) {
 				file.delete();
 			}
