@@ -34,7 +34,7 @@ import tk.pratanumandal.roboto.unique.Unique;
 public class App {
 	
 	// port over which application instances will communicate
-	public static final int APP_PORT = 31267;
+	public static final String APP_ID = "tk.pratanumandal.roboto-ladnam-unatarp-20191411#gg";
 	
 	// application frame object
 	public static AppFrame frame;
@@ -49,7 +49,7 @@ public class App {
 		}
 		
 		// create unique instance
-		Unique unique = new Unique(APP_PORT) {
+		Unique unique = new Unique(APP_ID) {
 			@Override
 			public void receiveMessage(String message) {
 				// print received message (timestamp)
