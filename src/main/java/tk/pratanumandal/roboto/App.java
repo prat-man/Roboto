@@ -29,7 +29,8 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import dorkbox.notify.Notify;
-import tk.pratanumandal.roboto.unique.Unique;
+import tk.pratanumandal.unique4j.Unique;
+import tk.pratanumandal.unique4j.exception.Unique4jException;
 
 public class App {
 	
@@ -72,7 +73,11 @@ public class App {
 		};
 		
 		// try to lock
-		unique.lock();
+		try {
+			unique.lock();
+		} catch (Unique4jException e) {
+			e.printStackTrace();
+		}
 		
 		// pre-initialize the notification framework
 		Notify.create();
@@ -90,7 +95,11 @@ public class App {
 		            JOptionPane.YES_NO_OPTION,
 		            JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
 		        	// free the unique lock
-		        	unique.free();
+		        	try {
+						unique.free();
+					} catch (Unique4jException e) {
+						e.printStackTrace();
+					}
 		        	// exit program gracefully
 		            System.exit(0);
 		        }
