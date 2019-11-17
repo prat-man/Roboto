@@ -74,7 +74,7 @@ public class App {
 		
 		// try to lock
 		try {
-			unique.lock();
+			unique.acquireLock();
 		} catch (Unique4jException e) {
 			e.printStackTrace();
 		}
@@ -96,7 +96,7 @@ public class App {
 		            JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
 		        	// free the unique lock
 		        	try {
-						unique.free();
+						unique.freeLock();
 					} catch (Unique4jException e) {
 						e.printStackTrace();
 					}
